@@ -2,6 +2,7 @@ import kotlinx.cinterop.*
 import platform.posix.*
 import libui.ktx.*
 
+@OptIn(ExperimentalForeignApi::class)
 fun main() = appWindow(
     title = "Hello",
     width = 320,
