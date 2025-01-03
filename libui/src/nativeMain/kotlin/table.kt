@@ -25,6 +25,7 @@ inline fun <T> Container.tableview(
 }
 
 /** Wrapper class for [uiTable] */
+@OptIn(ExperimentalForeignApi::class)
 class TableView(val table: Table<*>) : Control<uiTable>(
     alloc = memScoped {
         val params = alloc<uiTableParams>().apply {
@@ -45,7 +46,8 @@ class TableView(val table: Table<*>) : Control<uiTable>(
 }
 
 /** Wrapper class for [uiTableModel] */
-class Table<T>(
+@OptIn(ExperimentalForeignApi::class)
+class Table<T> @OptIn(ExperimentalForeignApi::class) constructor(
     val data: List<T>,
     internal val handler: CPointer<ktTableHandler> = nativeHeap.alloc<ktTableHandler>().ptr
 ) : Disposable<uiTableModel>(uiNewTableModel(handler.pointed.ui.ptr)) {
@@ -305,6 +307,7 @@ internal class TableColor(
     val get: (row: Int) -> Color?
 ) : TableControl()
 
+@OptIn(ExperimentalForeignApi::class)
 private fun tableColumnText(
     name: String,
     textModel: Int,
@@ -321,10 +324,12 @@ private fun tableColumnText(
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun tableColumnImage(name: String, imageModel: Int): TableView.() -> Unit = {
     uiTableAppendImageColumn(ptr, name, imageModel)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun tableColumnImageText(
     name: String,
     imageModel: Int,
@@ -342,10 +347,12 @@ private fun tableColumnImageText(
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun tableColumnCheckbox(name: String, checkboxModel: Int, checkboxEdit: Int): TableView.() -> Unit = {
     uiTableAppendCheckboxColumn(ptr, name, checkboxModel, checkboxEdit)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun tableColumnCheckboxText(
     name: String,
     checkboxModel: Int,
@@ -364,10 +371,12 @@ private fun tableColumnCheckboxText(
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun tableColumnProgressBar(name: String, progressModel: Int): TableView.() -> Unit = {
     uiTableAppendProgressBarColumn(ptr, name, progressModel)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun tableColumnButton(name: String, buttonTextModel: Int, buttonClickable: Int): TableView.() -> Unit = {
     uiTableAppendButtonColumn(ptr, name, buttonTextModel, buttonClickable)
 }

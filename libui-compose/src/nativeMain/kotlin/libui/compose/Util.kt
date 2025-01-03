@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import libui.*
 
+@OptIn(ExperimentalForeignApi::class)
 inline fun withLibUI(block: () -> Unit) {
     platform.posix.srand(platform.posix.time(null).toUInt())
 
@@ -40,6 +41,7 @@ internal fun Snapshot.Companion.globalWrites(): Flow<Any> {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 internal fun CPointer<ByteVar>.uiText(): String {
     try {
         return toKString()
@@ -48,11 +50,13 @@ internal fun CPointer<ByteVar>.uiText(): String {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 internal fun <T: CPointed> rememberControl(block: () -> CPointer<T>): Control<T> {
     return remember { Control(block()) }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 internal class Control<T: CPointed>(val ptr: CPointer<T>) : RememberObserver {
     override fun onAbandoned() {
         uiControlDestroy(ptr.reinterpret())
@@ -81,6 +85,7 @@ internal fun handleChildren(
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 internal fun <T: CPointed> Updater<CPointer<T>>.setCommon(enabled: Boolean, visible: Boolean) {
     set(visible) {
         if (it) {
@@ -98,6 +103,7 @@ internal fun <T: CPointed> Updater<CPointer<T>>.setCommon(enabled: Boolean, visi
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 internal fun <T: Any> rememberStableRef(data: T): StableRef<T> {
     class Wrapper(val ref: StableRef<T>) : RememberObserver {
@@ -143,10 +149,12 @@ abstract class SingletonApplier<T> : AbstractApplier<T?>(null) {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 abstract class AppendDeleteApplier : Applier<CPointer<uiControl>?> {
     abstract fun deleteItem(index: Int)
     abstract fun appendItem(instance: CPointer<uiControl>?)
 
+    @OptIn(ExperimentalForeignApi::class)
     open fun insertItemAt(index: Int, instance: CPointer<uiControl>?) {
         for (i in controls.lastIndex downTo index) {
             deleteItem(i)

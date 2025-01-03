@@ -96,21 +96,27 @@ inline fun Container.searchfield(
 }
 
 /** Wrapper class for [uiEntry] - a simple single line text entry widget */
-open class TextField internal constructor(alloc: CPointer<uiEntry>?) : Control<uiEntry>(alloc) {
+@OptIn(ExperimentalForeignApi::class)
+open class TextField @OptIn(ExperimentalForeignApi::class)
+internal constructor(alloc: CPointer<uiEntry>?) : Control<uiEntry>(alloc) {
+    @OptIn(ExperimentalForeignApi::class)
     constructor() : this(uiNewEntry())
 
     /** The current text of the TextField. */
+    @OptIn(ExperimentalForeignApi::class)
     var value: String
         get() = uiEntryText(ptr).uiText()
         set(value) = uiEntrySetText(ptr, value)
 
     /** Whether the text is read-only or not. Defaults to `false`. */
+    @OptIn(ExperimentalForeignApi::class)
     var readonly: Boolean
         get() = uiEntryReadOnly(ptr) != 0
         set(readonly) = uiEntrySetReadOnly(ptr, if (readonly) 1 else 0)
 
     /** Function to be run when the user makes a change to the TextField.
      *  Only one function can be registered at a time. */
+    @OptIn(ExperimentalForeignApi::class)
     fun action(block: TextField.() -> Unit) {
         action = block
         uiEntryOnChanged(ptr, staticCFunction { _, ref ->
@@ -125,9 +131,11 @@ open class TextField internal constructor(alloc: CPointer<uiEntry>?) : Control<u
 
 /** Wrapper class for [uiEntry] - a text entry widget that mask the input,
  *  useful to edit passwords or other sensible data. */
+@OptIn(ExperimentalForeignApi::class)
 class PasswordField : TextField(uiNewPasswordEntry())
 
 /** Wrapper class for [uiEntry] - a text entry widget to search text. */
+@OptIn(ExperimentalForeignApi::class)
 class SearchField : TextField(uiNewSearchEntry())
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,6 +154,7 @@ inline fun Container.textarea(
 }
 
 /** Wrapper class for [uiMultilineEntry] - a multiline plain text editing widget */
+@OptIn(ExperimentalForeignApi::class)
 class TextArea(wrap: Boolean = true) : Control<uiMultilineEntry>(
     if (wrap) uiNewMultilineEntry() else uiNewNonWrappingMultilineEntry()
 ) {
@@ -191,6 +200,7 @@ inline fun Container.checkbox(
 }
 
 /** Wrapper class for [uiCheckbox] - a checkbox widget. */
+@OptIn(ExperimentalForeignApi::class)
 class Checkbox(label: String) : Control<uiCheckbox>(uiNewCheckbox(label)) {
 
     /** The static text of the checkbox. */
@@ -230,6 +240,7 @@ inline fun Container.combobox(
 }
 
 /** Wrapper class for [uiCombobox] - a drop down combo box that allow list selection only. */
+@OptIn(ExperimentalForeignApi::class)
 class Combobox : Control<uiCombobox>(uiNewCombobox()) {
 
     /** Adds the named entry to the end of the combobox.
@@ -269,6 +280,7 @@ inline fun Container.editablecombobox(
 
 /** Wrapper class for [uiEditableCombobox] -
  *  a drop down combo box that allow selection from list or free text entry. */
+@OptIn(ExperimentalForeignApi::class)
 class EditableCombobox : Control<uiEditableCombobox>(uiNewEditableCombobox()) {
 
     /** Adds the named entry to the end of the editable combobox.
@@ -309,6 +321,7 @@ inline fun Container.spinbox(
 }
 
 /** Wrapper class for [uiSpinbox] - an entry widget for numerical values. */
+@OptIn(ExperimentalForeignApi::class)
 class Spinbox(min: Int, max: Int) : Control<uiSpinbox>(uiNewSpinbox(min, max)) {
 
     /** The current numeric value of the spinbox. */
@@ -345,9 +358,11 @@ inline fun Container.slider(
 }
 
 /** Wrapper class for [uiSlider] - an horizontal slide to set numerical values. */
+@OptIn(ExperimentalForeignApi::class)
 class Slider(min: Int, max: Int) : Control<uiSlider>(uiNewSlider(min, max)) {
 
     /** The current numeric value of the slider. */
+    @OptIn(ExperimentalForeignApi::class)
     var value: Int
         get() = uiSliderValue(ptr)
         set(value) = uiSliderSetValue(ptr, value)
@@ -379,6 +394,7 @@ inline fun Container.radiobuttons(
 }
 
 /** Wrapper class for [uiRadioButtons] - a widget that represent a group of radio options. */
+@OptIn(ExperimentalForeignApi::class)
 class RadioButtons : Control<uiRadioButtons>(uiNewRadioButtons()) {
 
     /** Adds the named button to the end of the radiobuttons.
@@ -437,15 +453,18 @@ inline fun Container.timepicker(
 }
 
 /** Wrapper class for [uiDateTimePicker] - a widget to edit date and time. */
+@OptIn(ExperimentalForeignApi::class)
 open class DateTimePicker internal constructor(
     alloc: CPointer<uiDateTimePicker>?
 ) : Control<uiDateTimePicker>(alloc) {
+    @OptIn(ExperimentalForeignApi::class)
     constructor() : this(uiNewDateTimePicker())
 
     internal var action: (DateTimePicker.() -> Unit)? = null
     internal open var defaultFormat = "%c"
 
     /** The current value as posix `struct tm` */
+    @OptIn(ExperimentalForeignApi::class)
     fun getValue(value: CPointer<tm>) = uiDateTimePickerTime(ptr, value)
 
     /** Set current value from posix `struct tm` */
@@ -469,7 +488,7 @@ open class DateTimePicker internal constructor(
         val tm = alloc<tm>()
         val buf = allocArray<ByteVar>(64)
         uiDateTimePickerTime(ptr, tm.ptr)
-        strftime(buf, 64, format, tm.ptr)
+        strftime(buf, 64u, format, tm.ptr)
         return buf.toKString()
     }
 
@@ -486,11 +505,13 @@ open class DateTimePicker internal constructor(
 }
 
 /** Wrapper class for [uiDateTimePicker] - a widget to edit date. */
+@OptIn(ExperimentalForeignApi::class)
 class DatePicker : DateTimePicker(uiNewDatePicker()) {
     override var defaultFormat = "%x"
 }
 
 /** Wrapper class for [uiDateTimePicker] - a widget to edit time. */
+@OptIn(ExperimentalForeignApi::class)
 class TimePicker : DateTimePicker(uiNewTimePicker()) {
     override var defaultFormat = "%X"
 }
@@ -509,9 +530,11 @@ inline fun Container.label(
 }
 
 /** Wrapper class for [uiLabel] - a static text label. */
+@OptIn(ExperimentalForeignApi::class)
 class Label(text: String) : Control<uiLabel>(uiNewLabel(text)) {
 
     /** The static text of the label. */
+    @OptIn(ExperimentalForeignApi::class)
     var text: String
         get() = uiLabelText(ptr).uiText()
         set(value) = uiLabelSetText(ptr, value)
@@ -540,14 +563,17 @@ inline fun HBox.separator(
 }
 
 /** Wrapper class for [uiSeparator] */
-abstract class Separator(
+@OptIn(ExperimentalForeignApi::class)
+abstract class Separator @OptIn(ExperimentalForeignApi::class) constructor(
     alloc: CPointer<uiSeparator>?
 ) : Control<uiSeparator>(alloc)
 
 /** Wrapper class for [uiSeparator] - an horizontal line to visually separate widgets. */
+@OptIn(ExperimentalForeignApi::class)
 class HorizontalSeparator : Separator(uiNewHorizontalSeparator())
 
 /** Wrapper class for [uiSeparator] - a vertical line to visually separate widgets. */
+@OptIn(ExperimentalForeignApi::class)
 class VerticalSeparator : Separator(uiNewVerticalSeparator())
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -563,6 +589,7 @@ inline fun Container.progressbar(
 }
 
 /** Wrapper class for [uiProgressBar] - a progress bar widget. */
+@OptIn(ExperimentalForeignApi::class)
 class ProgressBar : Control<uiProgressBar>(uiNewProgressBar()) {
 
     /** The current position of the progress bar.
@@ -586,15 +613,18 @@ inline fun Container.button(
 }
 
 /** Wrapper class for [uiButton] - a simple button. */
+@OptIn(ExperimentalForeignApi::class)
 class Button(text: String) : Control<uiButton>(uiNewButton(text)) {
 
     /** The static text of the button. */
+    @OptIn(ExperimentalForeignApi::class)
     var text: String
         get() = uiButtonText(ptr).uiText()
         set(text) = uiButtonSetText(ptr, text)
 
     /** Function to be run when the user clicks the Button.
      *  Only one function can be registered at a time. */
+    @OptIn(ExperimentalForeignApi::class)
     fun action(block: Button.() -> Unit) {
         action = block
         uiButtonOnClicked(ptr, staticCFunction { _, ref ->
@@ -620,6 +650,7 @@ inline fun Container.colorbutton(
 }
 
 /** Wrapper class for [uiColorButton] - a button that opens a color palette popup. */
+@OptIn(ExperimentalForeignApi::class)
 class ColorButton : Control<uiColorButton>(uiNewColorButton()) {
 
     /** Return or set the currently selected color */
@@ -663,6 +694,7 @@ inline fun Container.fontbutton(
 }
 
 /** Wrapper class for [uiFontButton] - a button that allows users to choose a font. */
+@OptIn(ExperimentalForeignApi::class)
 class FontButton : Control<uiFontButton>(uiNewFontButton()) {
     private val font = object : Font() {
         override fun clear() {

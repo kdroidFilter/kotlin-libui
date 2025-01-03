@@ -4,6 +4,7 @@ package libui.ktx.draw
 
 import cnames.structs.uiImage
 import kotlinx.cinterop.CValuesRef
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.UIntVar
 import libui.ktx.Disposable
 import libui.ktx.Table
@@ -13,8 +14,9 @@ import libui.uiNewImage
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
-class ImageData(val width: Int, val height: Int, val stride: Int, val pixels: CValuesRef<UIntVar>)
+class ImageData @OptIn(ExperimentalForeignApi::class) constructor(val width: Int, val height: Int, val stride: Int, val pixels: CValuesRef<UIntVar>)
 
+@OptIn(ExperimentalForeignApi::class)
 class Image(width: Double, height: Double) : Disposable<uiImage>(
     alloc = uiNewImage(width, height)
 ) {
@@ -31,5 +33,6 @@ fun Table<*>.image(width: Int, height: Int, block: Image.() -> Unit = {}): Image
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun Image.bitmap(data: ImageData) =
     uiImageAppend(ptr, data.pixels, data.width, data.height, data.stride)

@@ -15,6 +15,7 @@ typealias AreaMouseEvent = uiAreaMouseEvent
 
 /** DSL builder for a canvas you can draw on. It also receives keyboard and mouse events,
  *  is DPI aware, and has several other useful features. */
+@OptIn(ExperimentalForeignApi::class)
 fun Container.drawarea(
     init: DrawArea.() -> Unit = {}
 ): DrawArea {
@@ -25,6 +26,7 @@ fun Container.drawarea(
 }
 
 /** DSL builder for a canvas with horziontal and vertical scrollbars. */
+@OptIn(ExperimentalForeignApi::class)
 fun Container.scrollingarea(
     width: Int,
     height: Int,
@@ -37,7 +39,8 @@ fun Container.scrollingarea(
 }
 
 /** Wrapper class for [uiArea] - a canvas you can draw on. */
-open class DrawArea(
+@OptIn(ExperimentalForeignApi::class)
+open class DrawArea @OptIn(ExperimentalForeignApi::class) constructor(
     internal val handler: CPointer<ktAreaHandler> = nativeHeap.alloc<ktAreaHandler>().ptr,
     alloc: CPointer<uiArea>? = uiNewArea(handler.pointed.ui.ptr)
 ) : Control<uiArea>(alloc) {
@@ -129,7 +132,8 @@ open class DrawArea(
 }
 
 /** Wrapper class for [uiArea] - a canvas with horziontal and vertical scrollbars. */
-class ScrollingArea(
+@OptIn(ExperimentalForeignApi::class)
+class ScrollingArea @OptIn(ExperimentalForeignApi::class) constructor(
     width: Int,
     height: Int,
     handler: CPointer<ktAreaHandler> = nativeHeap.alloc<ktAreaHandler>().ptr,

@@ -10,6 +10,7 @@ class WindowState(contentSize: SizeInt) {
 }
 
 class WindowScope internal constructor() {
+    @OptIn(ExperimentalForeignApi::class)
     @Composable
     fun Window(
         onCloseRequest: () -> Unit,

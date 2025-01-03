@@ -1,3 +1,4 @@
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.convert
 import libui.*
 import libui.ktx.*
@@ -60,6 +61,7 @@ fun DrawArea.makeAttributedString() = string(
     append("Use the controls opposite to the text to control properties of the text.")
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun main() = appWindow(
     title = "libui Text-Drawing Example",
     width = 640,

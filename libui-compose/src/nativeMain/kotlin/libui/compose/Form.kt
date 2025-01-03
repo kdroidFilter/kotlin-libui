@@ -5,9 +5,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
 import cnames.structs.uiForm
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
 import libui.*
 
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun Form(
     padded: Boolean = true,
@@ -29,13 +31,15 @@ fun Form(
 }
 
 
-class FormApplier(private val form: CPointer<uiForm>) : AppendDeleteApplier() {
+class FormApplier @OptIn(ExperimentalForeignApi::class) constructor(private val form: CPointer<uiForm>) : AppendDeleteApplier() {
+    @ExperimentalForeignApi
     override fun appendItem(instance: CPointer<uiControl>?) {
         val label = ""
         val isStretchy = false
         uiFormAppend(form, label, instance, if (isStretchy) 1 else 0)
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     override fun deleteItem(index: Int) {
         uiFormDelete(form, index)
     }

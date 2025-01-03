@@ -1,6 +1,8 @@
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.cValuesOf
 import libui.ktx.draw.ImageData
 
+@OptIn(ExperimentalForeignApi::class)
 val `tango-icon-theme-0_8_90_16x16_x-office-spreadsheet` = ImageData(width=16, height=16, stride=64, pixels=cValuesOf(
     0xAC999999u,0xFF818181u,0xFF818181u,0xFF818181u,0xFF818181u,0xFF818181u,0xFF818181u,0xFF818181u,
     0xFF818181u,0xFF818181u,0xFF818181u,0xFF818181u,0xFF818181u,0x56818181u,0x00000000u,0x00000000u,

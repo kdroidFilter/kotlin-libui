@@ -13,6 +13,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 /** Draw a path filled with a color. */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawContext.fill(
     mode: uiDrawFillMode,
     brush: Brush,
@@ -29,6 +30,7 @@ fun DrawContext.fill(
 }
 
 /** Draw a path filled with a color. */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawContext.fill(brush: Brush, block: Path.() -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
@@ -37,6 +39,7 @@ fun DrawContext.fill(brush: Brush, block: Path.() -> Unit) {
 }
 
 /** Draw a path in the context. */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawContext.stroke(
     mode: uiDrawFillMode,
     brush: Brush,
@@ -54,6 +57,7 @@ fun DrawContext.stroke(
 }
 
 /** Draw a path in the context. */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawContext.stroke(brush: Brush, stroke: Stroke, block: Path.() -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
@@ -62,6 +66,7 @@ fun DrawContext.stroke(brush: Brush, stroke: Stroke, block: Path.() -> Unit) {
 }
 
 /** Apply a different transform matrix to the context. */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawContext.transform(block: Matrix.() -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
@@ -85,6 +90,7 @@ fun DrawContext.transform(block: Matrix.() -> Unit) {
 fun DrawArea.brush(): Brush = Brush().also { disposables.add(it) }
 
 /** Defines the color(s) to draw a path with. */
+@OptIn(ExperimentalForeignApi::class)
 class Brush : Disposable<uiDrawBrush>(
     alloc = nativeHeap.alloc<uiDrawBrush>().ptr
 ) {
@@ -178,6 +184,7 @@ class Brush : Disposable<uiDrawBrush>(
 ///////////////////////////////////////////////////////////////////////////////
 
 /** Creates a new [Stroke] with lifecycle delegated to [DrawArea]. */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawArea.stroke(block: uiDrawStrokeParams.() -> Unit = {}): Stroke {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
@@ -189,6 +196,7 @@ fun DrawArea.stroke(block: uiDrawStrokeParams.() -> Unit = {}): Stroke {
 }
 
 /** Describes the stroke to draw with. */
+@OptIn(ExperimentalForeignApi::class)
 class Stroke : Disposable<uiDrawStrokeParams>(
     alloc = nativeHeap.alloc<uiDrawStrokeParams>().ptr
 ) {
@@ -198,6 +206,7 @@ class Stroke : Disposable<uiDrawStrokeParams>(
 ///////////////////////////////////////////////////////////////////////////////
 
 /** Represent a path that could be drawed on a [DrawContext] */
+@OptIn(ExperimentalForeignApi::class)
 class Path(mode: uiDrawFillMode) : Disposable<uiDrawPath>(
     alloc = uiDrawNewPath(mode)
 ) {
@@ -254,6 +263,7 @@ class Path(mode: uiDrawFillMode) : Disposable<uiDrawPath>(
 ///////////////////////////////////////////////////////////////////////////////
 
 /** Defines a transformation (e.g. rotation, translation) */
+@OptIn(ExperimentalForeignApi::class)
 class Matrix : Disposable<uiDrawMatrix>(
     alloc = nativeHeap.alloc<uiDrawMatrix>().ptr
 ) {

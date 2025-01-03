@@ -16,6 +16,7 @@ import libui.*
 
 ///////////////////////////////////////////////////////////
 
+@OptIn(ExperimentalForeignApi::class)
 typealias MenuItem = CPointer<uiMenuItem>
 
 //void uiMenuItemEnable(uiMenuItem *m)
@@ -24,6 +25,7 @@ typealias MenuItem = CPointer<uiMenuItem>
 //int uiMenuItemChecked(uiMenuItem *m)
 //void uiMenuItemSetChecked(uiMenuItem *m, int checked)
 
+@OptIn(ExperimentalForeignApi::class)
 typealias Menu = CPointer<uiMenu>
 
 //uiMenuItem *uiMenuAppendItem(uiMenu *m, const char *name)

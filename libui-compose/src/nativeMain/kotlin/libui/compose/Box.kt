@@ -1,4 +1,5 @@
 @file:Suppress("FunctionName")
+@file:OptIn(ExperimentalForeignApi::class)
 
 package libui.compose
 
@@ -7,8 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
 import cnames.structs.uiBox
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
 import libui.*
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun VBox(
     padded: Boolean = true,
@@ -19,6 +22,7 @@ fun VBox(
     Box(ctor = { uiNewVerticalBox()!! }, padded, enabled, visible, content)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun HBox(
     padded: Boolean = true,
@@ -29,6 +33,7 @@ fun HBox(
     Box(ctor = { uiNewHorizontalBox()!! }, padded, enabled, visible, content)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 private fun Box(
     ctor: () -> CPointer<uiBox>,
@@ -50,9 +55,10 @@ private fun Box(
     )
 }
 
-class BoxApplier(
+class BoxApplier @OptIn(ExperimentalForeignApi::class) constructor(
     private val box: CPointer<uiBox>,
 ) : AppendDeleteApplier() {
+    @OptIn(ExperimentalForeignApi::class)
     override fun deleteItem(index: Int) {
         uiBoxDelete(box, index)
     }

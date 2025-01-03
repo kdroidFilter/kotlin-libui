@@ -48,6 +48,7 @@ fun runLibUI(content: @Composable WindowScope.() -> Unit) = withLibUI {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private inline fun composeLibUI(
     parent: CompositionContext,
     noinline content: @Composable WindowScope.() -> Unit,
@@ -84,6 +85,7 @@ private class LibUiDispatcher(private val backup: CoroutineDispatcher) : Closeab
 //        }
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     override fun dispatch(context: CoroutineContext, block: Runnable) {
         if (!isClosed) {
             val stableRef = StableRef.create(block)

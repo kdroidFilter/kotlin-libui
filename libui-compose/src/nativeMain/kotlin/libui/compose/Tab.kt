@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalForeignApi::class)
+
 package libui.compose
 
 import androidx.compose.runtime.Applier
@@ -5,9 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
 import cnames.structs.uiTab
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
 import libui.*
 
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun TabPane(
     enabled: Boolean = true,
@@ -26,12 +30,14 @@ fun TabPane(
     )
 }
 
-class TabApplier(private val tab: CPointer<uiTab>) : AppendDeleteApplier() {
+class TabApplier @OptIn(ExperimentalForeignApi::class) constructor(private val tab: CPointer<uiTab>) : AppendDeleteApplier() {
+    @OptIn(ExperimentalForeignApi::class)
     override fun appendItem(instance: CPointer<uiControl>?) {
         val name = ""
         uiTabAppend(tab, name, instance)
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     override fun deleteItem(index: Int) {
         uiTabDelete(tab, index)
     }

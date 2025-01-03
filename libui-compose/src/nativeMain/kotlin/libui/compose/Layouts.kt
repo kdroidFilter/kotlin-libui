@@ -6,8 +6,10 @@ import androidx.compose.runtime.*
 import cnames.structs.uiGroup
 //import cnames.structs.uiGrid
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
 import libui.*
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun Group(
     title: String,

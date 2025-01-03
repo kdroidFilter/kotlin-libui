@@ -7,6 +7,7 @@ import libui.ktx.*
 import kotlinx.cinterop.*
 
 /** draws formatted text with the top-left point at (`x`, `y`). */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawContext.text(
     string: AttributedString,
     defaultFont: Font,
@@ -21,6 +22,7 @@ fun DrawContext.text(
 }
 
 /** Representation of a [AttributedString] that can be displayed in a [DrawContext]. */
+@OptIn(ExperimentalForeignApi::class)
 class TextLayout(
     string: AttributedString,
     defaultFont: Font,
@@ -54,6 +56,7 @@ class TextLayout(
 ///////////////////////////////////////////////////////////////////////////////
 
 /** Creates a new [Font] with lifecycle delegated to [DrawArea]. */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawArea.font(
     family: String? = null,
     size: Double = 0.0,
@@ -63,6 +66,7 @@ fun DrawArea.font(
 ): Font = Font(family, size, weight, italic, stretch).also { disposables.add(it) }
 
 /** Provides a complete description of a font where one is needed.  */
+@OptIn(ExperimentalForeignApi::class)
 open class Font(
     family: String? = null,
     size: Double = 0.0,
@@ -95,17 +99,21 @@ open class Font(
 ///////////////////////////////////////////////////////////////////////////////
 
 /** Stores information about an attribute in a [AttributedString]. */
-abstract class Attribute(alloc: CPointer<uiAttribute>?) : Disposable<uiAttribute>(alloc) {
+@OptIn(ExperimentalForeignApi::class)
+abstract class Attribute @OptIn(ExperimentalForeignApi::class) constructor(alloc: CPointer<uiAttribute>?) : Disposable<uiAttribute>(alloc) {
 
     /** Frees a Attribute. You generally do not need to call this yourself,
      *  as [AttributedString] does this for you. */
+    @OptIn(ExperimentalForeignApi::class)
     override fun free() = uiFreeAttribute(ptr)
 
     /** Returns the type of Attribute. */
+    @OptIn(ExperimentalForeignApi::class)
     val type: uiAttributeType get() = uiAttributeGetType(ptr)
 }
 
 /** Changes the font family of the text it is applied to. */
+@OptIn(ExperimentalForeignApi::class)
 class FamilyAttribute(family: String) : Attribute(uiNewFamilyAttribute(family)) {
 
     /** Returns the font family stored. */
@@ -113,6 +121,7 @@ class FamilyAttribute(family: String) : Attribute(uiNewFamilyAttribute(family)) 
 }
 
 /** Changes the size of the text it is applied to, in typographical points. */
+@OptIn(ExperimentalForeignApi::class)
 class SizeAttribute(size: Double) : Attribute(uiNewSizeAttribute(size)) {
 
     /** Returns the font size stored. */
@@ -120,6 +129,7 @@ class SizeAttribute(size: Double) : Attribute(uiNewSizeAttribute(size)) {
 }
 
 /** Changes the weight of the text it is applied to. */
+@OptIn(ExperimentalForeignApi::class)
 class WeightAttribute(weight: uiTextWeight) : Attribute(uiNewWeightAttribute(weight)) {
 
     /** Returns the font weight stored. */
@@ -127,6 +137,7 @@ class WeightAttribute(weight: uiTextWeight) : Attribute(uiNewWeightAttribute(wei
 }
 
 /** Changes the italic mode of the text it is applied to. */
+@OptIn(ExperimentalForeignApi::class)
 class ItalicAttribute(italic: uiTextItalic) : Attribute(uiNewItalicAttribute(italic)) {
 
     /** uiAttributeItalic() returns the font italic mode stored. */
@@ -134,6 +145,7 @@ class ItalicAttribute(italic: uiTextItalic) : Attribute(uiNewItalicAttribute(ita
 }
 
 /** Changes the stretch of the text it is applied to. */
+@OptIn(ExperimentalForeignApi::class)
 class StretchAttribute(stretch: uiTextStretch) : Attribute(uiNewStretchAttribute(stretch)) {
 
     /** Returns the font stretch stored in [Attribute]. */
@@ -141,6 +153,7 @@ class StretchAttribute(stretch: uiTextStretch) : Attribute(uiNewStretchAttribute
 }
 
 /** Changes the color of the text it is applied to. */
+@OptIn(ExperimentalForeignApi::class)
 class ColorAttribute(color: Color) : Attribute(uiNewColorAttribute(color.r, color.g, color.b, color.a)) {
 
     /** Returns the text color stored. */
@@ -156,6 +169,7 @@ class ColorAttribute(color: Color) : Attribute(uiNewColorAttribute(color.r, colo
 }
 
 /** Changes the background color of the text it is applied to. */
+@OptIn(ExperimentalForeignApi::class)
 class BackgroundAttribute(color: Color) :
     Attribute(uiNewBackgroundAttribute(color.r, color.g, color.b, color.a)) {
 
@@ -163,6 +177,7 @@ class BackgroundAttribute(color: Color) :
 }
 
 /** Changes the type of underline on the text it is applied to. */
+@OptIn(ExperimentalForeignApi::class)
 class UnderlineAttribute(u: uiUnderline) : Attribute(uiNewUnderlineAttribute(u)) {
 
     /** Returns the underline type stored in [Attribute]. */
@@ -170,6 +185,7 @@ class UnderlineAttribute(u: uiUnderline) : Attribute(uiNewUnderlineAttribute(u))
 }
 
 /** Changes the color of the underline on the text it is applied to. */
+@OptIn(ExperimentalForeignApi::class)
 class UnderlineColorAttribute(kind: uiUnderlineColor, color: Color) : Attribute(
     uiNewUnderlineColorAttribute(kind, color.r, color.g, color.b, color.a)
 ) {
@@ -203,19 +219,24 @@ class UnderlineColorAttribute(kind: uiUnderlineColor, color: Color) : Attribute(
 
 /** Creates a new Attribute that changes the font family of the text it is applied to.
  *  otf is copied you may free it. */
+@OptIn(ExperimentalForeignApi::class)
 class FeaturesAttribute(otf: OpenTypeFeatures) : Attribute(uiNewFeaturesAttribute(otf.ptr)) {
 
     /** Returns the OpenType features stored. */
+    @OptIn(ExperimentalForeignApi::class)
     val value: OpenTypeFeatures get() = OpenTypeFeatures(uiAttributeFeatures(ptr))
 }
 
 /** Represents a set of OpenType feature tag-value pairs, for applying OpenType features to text. */
+@OptIn(ExperimentalForeignApi::class)
 class OpenTypeFeatures(copy: CPointer<uiOpenTypeFeatures>? = null) : Disposable<uiOpenTypeFeatures>(
     alloc = copy ?: uiNewOpenTypeFeatures()
 ) {
+    @OptIn(ExperimentalForeignApi::class)
     override fun free() = uiFreeOpenTypeFeatures(ptr)
 
     /** Makes a copy of otf and returns it. Changing one will not affect the other. */
+    @OptIn(ExperimentalForeignApi::class)
     fun copy() = OpenTypeFeatures(uiOpenTypeFeaturesClone(ptr))
 
     /** Adds the given feature tag and value to OpenTypeFeatures. If there is already a value
@@ -272,6 +293,7 @@ fun DrawArea.string(init: String): AttributedString =
     AttributedString(init).also { disposables.add(it) }
 
 /** Represents a string of UTF-8 text that can be embellished with formatting attributes. */
+@OptIn(ExperimentalForeignApi::class)
 class AttributedString(init: String) : Disposable<uiAttributedString>(
     alloc = uiNewAttributedString(init)
 ) {

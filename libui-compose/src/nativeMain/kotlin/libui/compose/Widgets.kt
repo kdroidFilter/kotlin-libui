@@ -22,6 +22,7 @@ import kotlinx.cinterop.*
 import libui.*
 import kotlin.native.concurrent.Worker
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun Label(
     text: String,
@@ -40,6 +41,7 @@ fun Label(
 }
 
 // TODO: Only use in HBox
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun VerticalSeparator(
     enabled: Boolean = true,
@@ -56,6 +58,7 @@ fun VerticalSeparator(
 }
 
 // TODO: Only use in VBox
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun HorizontalSeparator(
     enabled: Boolean = true,
@@ -71,6 +74,7 @@ fun HorizontalSeparator(
     )
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun ProgressBar(
     value: Int = -1,
@@ -88,6 +92,7 @@ fun ProgressBar(
     )
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun Button(
     text: String,
@@ -118,6 +123,7 @@ fun Button(
     )
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun ColorButton(
     color: MutableState<Color>,
@@ -161,6 +167,7 @@ fun ColorButton(
 
 
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 private fun Entry(
     control: Control<uiEntry>,
@@ -192,6 +199,7 @@ private fun Entry(
     )
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun TextField(
     text: MutableState<String>,
@@ -203,6 +211,7 @@ fun TextField(
     Entry(control, text, readOnly, enabled, visible)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun PasswordField(
     text: MutableState<String>,
@@ -214,6 +223,7 @@ fun PasswordField(
     Entry(control, text, readOnly, enabled, visible)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun SearchField(
     text: MutableState<String>,
@@ -226,6 +236,7 @@ fun SearchField(
 }
 
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 private fun MultilineEntryBase(
     control: Control<uiMultilineEntry>,
@@ -257,6 +268,7 @@ private fun MultilineEntryBase(
     )
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun MultilineEntry(
     text: MutableState<String>,
@@ -268,6 +280,7 @@ fun MultilineEntry(
     MultilineEntryBase(control, text, readOnly, enabled, visible)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun NonWrappingMultilineEntry(
     text: MutableState<String>,
@@ -279,6 +292,7 @@ fun NonWrappingMultilineEntry(
     MultilineEntryBase(control, text, readOnly, enabled, visible)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun Checkbox(
     label: String,
@@ -315,6 +329,7 @@ fun Checkbox(
 
 // Spinbox
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 fun Slider(
     value: MutableState<Int>,

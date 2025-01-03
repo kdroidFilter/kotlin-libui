@@ -12,6 +12,7 @@ import libui.*
  *  - [disposed] is a final state of the class, it is not supposed
  *    to be used after being disposed.
  */
+@OptIn(ExperimentalForeignApi::class)
 abstract class Disposable<T : CPointed>(alloc: CPointer<T>?) {
     internal var _ptr: CPointer<T>? = alloc ?: throw Error("Resource not allocated")
     internal val ptr: CPointer<T> get() = _ptr ?: throw Error("Resource is disposed")

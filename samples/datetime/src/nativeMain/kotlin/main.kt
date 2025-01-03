@@ -1,6 +1,8 @@
+import kotlinx.cinterop.ExperimentalForeignApi
 import libui.*
 import libui.ktx.*
 
+@OptIn(ExperimentalForeignApi::class)
 fun main() = appWindow(
     title = "Date / Time",
     width = 320,

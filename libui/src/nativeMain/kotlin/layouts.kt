@@ -8,6 +8,7 @@ import cnames.structs.uiGrid
 import cnames.structs.uiGroup
 import cnames.structs.uiTab
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
 import libui.*
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -41,6 +42,7 @@ fun Container.group(
 
 /** Wrapper class for [uiGroup] - a container for a single widget that provide
  *  a caption and visually group it's children. */
+@OptIn(ExperimentalForeignApi::class)
 class Group(title: String) : Control<uiGroup>(uiNewGroup(title)), Container {
 
     /** Set the child widget of the Group. */
@@ -95,7 +97,8 @@ inline val Container.hbox: HBox get() = hbox()
 inline val Container.vbox: VBox get() = vbox()
 
 /** Wrapper class for [uiBox] - a container that stack its children horizontally or vertically. */
-abstract class Box(alloc: CPointer<uiBox>?) : Control<uiBox>(alloc), Container {
+@OptIn(ExperimentalForeignApi::class)
+abstract class Box @OptIn(ExperimentalForeignApi::class) constructor(alloc: CPointer<uiBox>?) : Control<uiBox>(alloc), Container {
     /** Next added child should expand to use all available size. */
     var stretchy = false
 
@@ -116,9 +119,11 @@ abstract class Box(alloc: CPointer<uiBox>?) : Control<uiBox>(alloc), Container {
 }
 
 /** Wrapper class for [uiBox] - a container that stack its children horizontally. */
+@OptIn(ExperimentalForeignApi::class)
 class HBox : Box(uiNewHorizontalBox())
 
 /** Wrapper class for [uiBox] - a container that stack its children vertically. */
+@OptIn(ExperimentalForeignApi::class)
 class VBox : Box(uiNewVerticalBox())
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -137,6 +142,7 @@ inline fun Container.form(
 }
 
 /** Wrapper class for [uiForm] - a container that organize children as labeled fields. */
+@OptIn(ExperimentalForeignApi::class)
 class Form : Control<uiForm>(uiNewForm()), Container {
     /** Label for next added child */
     var label = ""
@@ -187,6 +193,7 @@ inline fun TabPane.page(
 }
 
 /** Wrapper class for [uiTab] - a container that show each children in a separate tab. */
+@OptIn(ExperimentalForeignApi::class)
 class TabPane : Control<uiTab>(uiNewTab()) {
 
     /** adapter for DSL builders */
@@ -239,6 +246,7 @@ inline fun Container.gridpane(
 
 /** Wrapper class for [uiGrid] - a powerful container that allow to specify
  *  size and position of each children. */
+@OptIn(ExperimentalForeignApi::class)
 class GridPane : Control<uiGrid>(uiNewGrid()), Container {
 
     /** The x-coordinate of the Control's location. */

@@ -11,6 +11,7 @@ import kotlin.contracts.contract
 
 /** Represents a top-level window.
  *  Contains one child control that occupies the entirety of the window. */
+@OptIn(ExperimentalForeignApi::class)
 class Window(
     title: String,
     width: Int,
@@ -89,6 +90,7 @@ class Window(
 private lateinit var mainWindow: Window
 
 /** Displays a modal Open File Dialog. */
+@OptIn(ExperimentalForeignApi::class)
 fun OpenFileDialog(): String? {
     val rawName = uiOpenFile(mainWindow.ptr)
     if (rawName == null) return null
@@ -98,6 +100,7 @@ fun OpenFileDialog(): String? {
 }
 
 /** Displays a modal Open Folder Dialog. */
+@OptIn(ExperimentalForeignApi::class)
 fun OpenFolderDialog(): String? {
     val rawName = uiOpenFolder(mainWindow.ptr)
     if (rawName == null) return null
@@ -107,6 +110,7 @@ fun OpenFolderDialog(): String? {
 }
 
 /** Displays a modal Save File Dialog. */
+@OptIn(ExperimentalForeignApi::class)
 fun SaveFileDialog(): String? {
     val rawName = uiSaveFile(mainWindow.ptr)
     if (rawName == null) return null
@@ -116,9 +120,11 @@ fun SaveFileDialog(): String? {
 }
 
 /** Displays a modal Message Box. */
+@OptIn(ExperimentalForeignApi::class)
 fun MsgBox(text: String, details: String = "") = uiMsgBox(mainWindow.ptr, text, details)
 
 /** Displays a modal Error Message Box. */
+@OptIn(ExperimentalForeignApi::class)
 fun MsgBoxError(text: String, details: String = "") = uiMsgBoxError(mainWindow.ptr, text, details)
 
 /**
@@ -127,6 +133,7 @@ fun MsgBoxError(text: String, details: String = "") = uiMsgBoxError(mainWindow.p
  * initial state: open the main window, create controls, and set up
  * events.
  */
+@OptIn(ExperimentalForeignApi::class)
 fun appWindow(
     title: String,
     width: Int,
@@ -162,12 +169,14 @@ fun appWindow(
     actions.forEach { it.dispose() }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private val actions = mutableListOf<StableRef<Any>>()
 
 /** Function to be executed when the OS wants the program to quit
  *  or when a Quit menu item has been clicked.
  *  Only one function may be registered at a time.
  *  @returns `true` when Quit will be called. */
+@OptIn(ExperimentalForeignApi::class)
 fun onShouldQuit(block: () -> Boolean) {
     val ref = StableRef.create(block).also { actions.add(it) }
     uiOnShouldQuit(staticCFunction { _ref ->
@@ -178,6 +187,7 @@ fun onShouldQuit(block: () -> Boolean) {
 
 /** Function to be executed on a timer on the main thread.
  *  @returns `true` to continue and `false` to stop. */
+@OptIn(ExperimentalForeignApi::class)
 fun onTimer(milliseconds: Int, block: () -> Boolean) {
     val ref = StableRef.create(block).also { actions.add(it) }
     uiTimer(milliseconds, staticCFunction { _ref ->

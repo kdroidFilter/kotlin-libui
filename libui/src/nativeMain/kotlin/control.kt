@@ -6,11 +6,13 @@ import kotlinx.cinterop.*
 import libui.*
 
 /** Container for child controls. */
+@OptIn(ExperimentalForeignApi::class)
 interface Container {
     fun <T : Control<*>> add(widget: T): T
 }
 
 /** Base class for all GUI controls (widgets). */
+@ExperimentalForeignApi
 abstract class Control<T : CPointed>(alloc: CPointer<T>?) : Disposable<T>(alloc) {
     internal val ctl: CPointer<uiControl> get() = ptr.reinterpret()
     internal val ctlDestroy = ctl.pointed.Destroy
@@ -85,10 +87,13 @@ abstract class Control<T : CPointed>(alloc: CPointer<T>?) : Disposable<T>(alloc)
 }
 
 //TODO: remove this intermediate map
+@OptIn(ExperimentalForeignApi::class)
 private var controls = mutableMapOf<CPointer<uiControl>, Control<*>>()
 
+@OptIn(ExperimentalForeignApi::class)
 internal inline fun <reified T : Control<*>> COpaquePointer?.to() = this!!.asStableRef<T>().get()
 
+@OptIn(ExperimentalForeignApi::class)
 internal fun CPointer<ByteVar>?.uiText(): String {
     if (this == null) return ""
     val string = this.toKString()

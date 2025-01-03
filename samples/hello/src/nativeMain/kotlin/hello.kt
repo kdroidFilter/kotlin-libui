@@ -1,6 +1,7 @@
 ﻿import kotlinx.cinterop.*
 import libui.*
 
+@OptIn(ExperimentalForeignApi::class)
 fun main() = memScoped {
     val options = alloc<uiInitOptions>()
     val error = uiInit(options.ptr)
