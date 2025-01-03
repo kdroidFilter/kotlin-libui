@@ -14,9 +14,7 @@ subprojects {
     configure<KotlinMultiplatformExtension> {
         if (os.isWindows) {
             mingwX64("windows64")
-            if (!isRunningInIde) {
-                mingwX86("windows")
-            }
+
         }
         if (os.isLinux) {
             linuxX64("linux")
@@ -58,7 +56,7 @@ subprojects {
                 }
             }
             binaries {
-                executable(listOf(RELEASE)) {
+                executable(listOf(RELEASE, DEBUG)) {
                     if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW) {
                         windowsResources("${rootProject.rootDir}/samples/resources/samples.rc")
                     }

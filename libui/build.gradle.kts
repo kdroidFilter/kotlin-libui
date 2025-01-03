@@ -45,9 +45,7 @@ kotlin {
 
     if (publishModeEnabled || os.isWindows) {
         mingwX64("windows64")
-        if (!isRunningInIde) {
-            mingwX86("windows")
-        }
+
     }
     if (publishModeEnabled || os.isLinux) {
         linuxX64("linux")
@@ -64,6 +62,8 @@ kotlin {
             languageSettings.optIn("kotlinx.cinterop.UnsafeNumber")
         }
     }
+
+
     targets.withType<KotlinNativeTarget> {
         sourceSets["${targetName}Main"].apply {
             dependsOn(nativeMain)
@@ -86,10 +86,10 @@ tasks.withType<CInteropProcess> {
     val downloadArchive = tasks.register<Download>(name.replaceFirst("cinterop", "download")) {
         val release = "${Libui.repo}/releases/download/${Libui.version}/libui-${Libui.version}"
         when (konanTarget) {
-            MINGW_X86 -> src("$release-windows-386-mingw-static.zip")
             MINGW_X64 -> src("$release-windows-amd64-mingw-static.zip")
             LINUX_X64 -> src("$release-linux-amd64-static.tgz")
             MACOS_X64 -> src("$release-darwin-amd64-static.tgz")
+            else -> {}
         }
         dest(archiveFile)
         overwrite(false)

@@ -1,9 +1,13 @@
 [versions]
-kotlin = "1.7.20"
+kotlin = "1.9.10"
 download = "4.1.2"
 dokka = "0.9.17"
+compose-plugin = "1.5.2"
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.multiplatform", version.ref="kotlin" }
 download = { id = "de.undercouch.download", version.ref="download" }
 dokka = { id = "org.jetbrains.dokka", version.ref="dokka" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
