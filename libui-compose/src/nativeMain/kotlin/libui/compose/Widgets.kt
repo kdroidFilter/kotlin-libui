@@ -163,7 +163,27 @@ fun ColorButton(
     )
 }
 
-// FontButton
+/**
+ * A font button widget that allows the user to select a font.
+ *
+ * @param enabled Whether the font button is enabled.
+ * @param visible Whether the font button is visible.
+ */
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+fun FontButton(
+    enabled: Boolean = true,
+    visible: Boolean = true,
+) {
+    val control = rememberControl { uiNewFontButton()!! }
+
+    ComposeNode<CPointer<uiFontButton>, Applier<CPointer<uiControl>>>(
+        factory = { control.ptr },
+        update = {
+            setCommon(enabled, visible)
+        }
+    )
+}
 
 
 
@@ -327,7 +347,151 @@ fun Checkbox(
 
 // Combobox
 
+/**
+ * A combobox widget that allows the user to select an item from a dropdown list.
+ *
+ * @param selected The index of the currently selected item.
+ * @param items The list of items to display in the combobox.
+ * @param enabled Whether the combobox is enabled.
+ * @param visible Whether the combobox is visible.
+ */
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+fun Combobox(
+    selected: MutableState<Int>,
+    items: List<String>,
+    enabled: Boolean = true,
+    visible: Boolean = true,
+) {
+    val state = rememberStableRef(selected)
+
+    // We need to recreate the control when the items change
+    val control = rememberControl(items.hashCode()) { 
+        val combobox = uiNewCombobox()!!
+
+        // Add all items to the combobox
+        items.forEach { item ->
+            uiComboboxAppend(combobox, item)
+        }
+
+        combobox
+    }
+
+    ComposeNode<CPointer<uiCombobox>, Applier<CPointer<uiControl>>>(
+        factory = { control.ptr },
+        update = {
+            setCommon(enabled, visible)
+            set(selected.value) { uiComboboxSetSelected(this, it) }
+            set(state) {
+                uiComboboxOnSelected(
+                    this,
+                    staticCFunction { entry, senderData ->
+                        val ref = senderData!!.asStableRef<MutableState<Int>>()
+                        val data = uiComboboxSelected(entry)
+                        ref.get().value = data
+                    },
+                    it.asCPointer()
+                )
+            }
+        }
+    )
+}
+
+/**
+ * An editable combobox widget that allows the user to select an item from a dropdown list or enter a custom value.
+ *
+ * @param text The current text value of the combobox.
+ * @param items The list of items to display in the combobox.
+ * @param enabled Whether the combobox is enabled.
+ * @param visible Whether the combobox is visible.
+ */
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+fun EditableCombobox(
+    text: MutableState<String>,
+    items: List<String>,
+    enabled: Boolean = true,
+    visible: Boolean = true,
+) {
+    val state = rememberStableRef(text)
+
+    // We need to recreate the control when the items change
+    val control = rememberControl(items.hashCode()) { 
+        val combobox = uiNewEditableCombobox()!!
+
+        // Add all items to the combobox
+        items.forEach { item ->
+            uiEditableComboboxAppend(combobox, item)
+        }
+
+        combobox
+    }
+
+    ComposeNode<CPointer<uiEditableCombobox>, Applier<CPointer<uiControl>>>(
+        factory = { control.ptr },
+        update = {
+            setCommon(enabled, visible)
+            set(text.value) { uiEditableComboboxSetText(this, it) }
+            set(state) {
+                uiEditableComboboxOnChanged(
+                    this,
+                    staticCFunction { entry, senderData ->
+                        val ref = senderData!!.asStableRef<MutableState<String>>()
+                        val data = uiEditableComboboxText(entry)!!.uiText()
+                        ref.get().value = data
+                    },
+                    it.asCPointer()
+                )
+            }
+        }
+    )
+}
+
 // Spinbox
+
+/**
+ * A spinbox widget that allows the user to select a value from a range.
+ *
+ * @param value The current value of the spinbox.
+ * @param min The minimum value of the spinbox.
+ * @param max The maximum value of the spinbox.
+ * @param enabled Whether the spinbox is enabled.
+ * @param visible Whether the spinbox is visible.
+ */
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+fun Spinbox(
+    value: MutableState<Int>,
+    min: Int,
+    max: Int,
+    enabled: Boolean = true,
+    visible: Boolean = true,
+) {
+    val state = rememberStableRef(value)
+
+    // Since min and max cannot be changed after creation, we need to recreate the control
+    // when they change. We use min and max as keys to force recomposition.
+    val control = rememberControl(min, max) { uiNewSpinbox(min, max)!! }
+
+    ComposeNode<CPointer<uiSpinbox>, Applier<CPointer<uiControl>>>(
+        factory = { control.ptr },
+        update = {
+            setCommon(enabled, visible)
+            set(value.value) { uiSpinboxSetValue(this, it) }
+            set(state) {
+                uiSpinboxOnChanged(
+                    this,
+                    staticCFunction { entry, senderData ->
+                        val ref = senderData!!.asStableRef<MutableState<Int>>()
+                        val data = uiSpinboxValue(entry)
+                        ref.get().value = data
+                    },
+                    it.asCPointer()
+                )
+            }
+        }
+    )
+}
 
 /**
  * A slider widget that allows the user to select a value from a range.
@@ -373,10 +537,118 @@ fun Slider(
     )
 }
 
-// uiNewRadioButtons()
+/**
+ * A radio buttons widget that allows the user to select one option from a group of options.
+ *
+ * @param selected The index of the currently selected option.
+ * @param options The list of options to display.
+ * @param enabled Whether the radio buttons are enabled.
+ * @param visible Whether the radio buttons are visible.
+ */
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+fun RadioButtons(
+    selected: MutableState<Int>,
+    options: List<String>,
+    enabled: Boolean = true,
+    visible: Boolean = true,
+) {
+    val state = rememberStableRef(selected)
 
-// uiNewDateTimePicker()
+    // We need to recreate the control when the options change
+    val control = rememberControl(options.hashCode()) { 
+        val radioButtons = uiNewRadioButtons()!!
 
-// uiNewDatePicker()
+        // Add all options to the radio buttons
+        options.forEach { option ->
+            uiRadioButtonsAppend(radioButtons, option)
+        }
 
-// uiNewTimePicker()
+        radioButtons
+    }
+
+    ComposeNode<CPointer<uiRadioButtons>, Applier<CPointer<uiControl>>>(
+        factory = { control.ptr },
+        update = {
+            setCommon(enabled, visible)
+            set(selected.value) { uiRadioButtonsSetSelected(this, it) }
+            set(state) {
+                uiRadioButtonsOnSelected(
+                    this,
+                    staticCFunction { entry, senderData ->
+                        val ref = senderData!!.asStableRef<MutableState<Int>>()
+                        val data = uiRadioButtonsSelected(entry)
+                        ref.get().value = data
+                    },
+                    it.asCPointer()
+                )
+            }
+        }
+    )
+}
+
+/**
+ * A date and time picker widget that allows the user to select a date and time.
+ *
+ * @param enabled Whether the date time picker is enabled.
+ * @param visible Whether the date time picker is visible.
+ */
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+fun DateTimePicker(
+    enabled: Boolean = true,
+    visible: Boolean = true,
+) {
+    val control = rememberControl { uiNewDateTimePicker()!! }
+
+    ComposeNode<CPointer<uiDateTimePicker>, Applier<CPointer<uiControl>>>(
+        factory = { control.ptr },
+        update = {
+            setCommon(enabled, visible)
+        }
+    )
+}
+
+/**
+ * A date picker widget that allows the user to select a date.
+ *
+ * @param enabled Whether the date picker is enabled.
+ * @param visible Whether the date picker is visible.
+ */
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+fun DatePicker(
+    enabled: Boolean = true,
+    visible: Boolean = true,
+) {
+    val control = rememberControl { uiNewDatePicker()!! }
+
+    ComposeNode<CPointer<uiDateTimePicker>, Applier<CPointer<uiControl>>>(
+        factory = { control.ptr },
+        update = {
+            setCommon(enabled, visible)
+        }
+    )
+}
+
+/**
+ * A time picker widget that allows the user to select a time.
+ *
+ * @param enabled Whether the time picker is enabled.
+ * @param visible Whether the time picker is visible.
+ */
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+fun TimePicker(
+    enabled: Boolean = true,
+    visible: Boolean = true,
+) {
+    val control = rememberControl { uiNewTimePicker()!! }
+
+    ComposeNode<CPointer<uiDateTimePicker>, Applier<CPointer<uiControl>>>(
+        factory = { control.ptr },
+        update = {
+            setCommon(enabled, visible)
+        }
+    )
+}

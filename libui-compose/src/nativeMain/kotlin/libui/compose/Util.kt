@@ -224,7 +224,7 @@ abstract class AppendDeleteApplier : Applier<CPointer<uiControl>?> {
         }
     }
 
-    protected val controls = mutableListOf<CPointer<uiControl>>()
+    val controls = mutableListOf<CPointer<uiControl>>()
     private val listApplier = MutableListApplier(controls)
 
     override fun clear() {
