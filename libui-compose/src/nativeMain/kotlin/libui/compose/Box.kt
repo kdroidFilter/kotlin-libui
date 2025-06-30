@@ -11,6 +11,14 @@ import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import libui.*
 
+/**
+ * A vertical box container that stacks its children vertically.
+ *
+ * @param padded Whether the box should have padding between its children.
+ * @param enabled Whether the box is enabled.
+ * @param visible Whether the box is visible.
+ * @param content The content of the box.
+ */
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 fun VBox(
@@ -22,6 +30,14 @@ fun VBox(
     Box(ctor = { uiNewVerticalBox()!! }, padded, enabled, visible, content)
 }
 
+/**
+ * A horizontal box container that stacks its children horizontally.
+ *
+ * @param padded Whether the box should have padding between its children.
+ * @param enabled Whether the box is enabled.
+ * @param visible Whether the box is visible.
+ * @param content The content of the box.
+ */
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 fun HBox(
@@ -33,6 +49,15 @@ fun HBox(
     Box(ctor = { uiNewHorizontalBox()!! }, padded, enabled, visible, content)
 }
 
+/**
+ * Internal implementation for box containers.
+ *
+ * @param ctor A function that creates the box container.
+ * @param padded Whether the box should have padding between its children.
+ * @param enabled Whether the box is enabled.
+ * @param visible Whether the box is visible.
+ * @param content The content of the box.
+ */
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 private fun Box(
@@ -55,14 +80,29 @@ private fun Box(
     )
 }
 
+/**
+ * An applier for box containers that handles adding and removing children.
+ *
+ * @param box The box container to apply changes to.
+ */
 class BoxApplier @OptIn(ExperimentalForeignApi::class) constructor(
     private val box: CPointer<uiBox>,
 ) : AppendDeleteApplier() {
+    /**
+     * Deletes an item from the box at the specified index.
+     *
+     * @param index The index of the item to delete.
+     */
     @OptIn(ExperimentalForeignApi::class)
     override fun deleteItem(index: Int) {
         uiBoxDelete(box, index)
     }
 
+    /**
+     * Appends an item to the box.
+     *
+     * @param instance The control to append.
+     */
     override fun appendItem(instance: CPointer<uiControl>?) {
         val isStretchy = false
         uiBoxAppend(box, instance, if (isStretchy) 1 else 0)

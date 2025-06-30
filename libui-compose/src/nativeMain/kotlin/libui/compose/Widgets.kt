@@ -329,6 +329,15 @@ fun Checkbox(
 
 // Spinbox
 
+/**
+ * A slider widget that allows the user to select a value from a range.
+ *
+ * @param value The current value of the slider.
+ * @param min The minimum value of the slider.
+ * @param max The maximum value of the slider.
+ * @param enabled Whether the slider is enabled.
+ * @param visible Whether the slider is visible.
+ */
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 fun Slider(
@@ -340,34 +349,28 @@ fun Slider(
 ) {
     val state = rememberStableRef(value)
 
-    val hack = remember(min, max) {
-        movableContentOf {
-            val control = rememberControl { uiNewSlider(min, max)!! }
+    // Since min and max cannot be changed after creation, we need to recreate the control
+    // when they change. We use min and max as keys to force recomposition.
+    val control = rememberControl(min, max) { uiNewSlider(min, max)!! }
 
-            ComposeNode<CPointer<uiSlider>, Applier<CPointer<uiControl>>>(
-                factory = { control.ptr },
-                update = {
-                    setCommon(enabled, visible)
-                    set(value.value) { uiSliderSetValue(this, it) }
-                    set(state) {
-                        uiSliderOnChanged(
-                            this,
-                            staticCFunction { entry, senderData ->
-                                val ref = senderData!!.asStableRef<MutableState<Int>>()
-                                val data = uiSliderValue(entry)
-                                ref.get().value = data
-                            },
-                            it.asCPointer()
-                        )
-                    }
-                    update(min) { throw UnsupportedOperationException("Slider.min cannot be changed!") }
-                    update(max) { throw UnsupportedOperationException("Slider.max cannot be changed!") }
-                }
-            )
+    ComposeNode<CPointer<uiSlider>, Applier<CPointer<uiControl>>>(
+        factory = { control.ptr },
+        update = {
+            setCommon(enabled, visible)
+            set(value.value) { uiSliderSetValue(this, it) }
+            set(state) {
+                uiSliderOnChanged(
+                    this,
+                    staticCFunction { entry, senderData ->
+                        val ref = senderData!!.asStableRef<MutableState<Int>>()
+                        val data = uiSliderValue(entry)
+                        ref.get().value = data
+                    },
+                    it.asCPointer()
+                )
+            }
         }
-    }
-
-    hack()
+    )
 }
 
 // uiNewRadioButtons()

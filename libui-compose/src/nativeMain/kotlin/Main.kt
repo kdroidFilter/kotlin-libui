@@ -18,6 +18,7 @@ fun main() {
             },
             state = state,
             title = "LibUI and Compose!",
+            fullscreen = true,
             content = {
                 var num by remember { mutableStateOf(1) }
                 val isOn = remember { mutableStateOf(true) }
