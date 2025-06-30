@@ -57,14 +57,14 @@ open class DrawArea @OptIn(ExperimentalForeignApi::class) constructor(
 
     /** Funcion to be run when the area was created or got resized with [AreaDrawParams] as parameter.
      *  Only one function can be registered at a time. */
-    fun draw(block: DrawContext.(params: AreaDrawParams) -> Unit) {
+    fun draw(block: (context: CPointer<uiDrawContext>, params: AreaDrawParams) -> Unit) {
         draw = block
     }
-    internal var draw: (DrawContext.(params: AreaDrawParams) -> Unit)? = null
+    internal var draw: ((context: CPointer<uiDrawContext>, params: AreaDrawParams) -> Unit)? = null
     init {
         handler.pointed.ui.Draw = staticCFunction { handler, _, params ->
             with(handler!!.reinterpret<ktAreaHandler>().pointed.ref.to<DrawArea>()) {
-                draw?.invoke(params!!.pointed.Context!!.pointed, params.pointed)
+                draw?.invoke(params!!.pointed.Context!!, params.pointed)
             }
         }
     }

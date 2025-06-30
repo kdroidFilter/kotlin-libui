@@ -1,8 +1,10 @@
 import androidx.compose.runtime.*
 import kotlinx.coroutines.*
+import kotlinx.cinterop.ExperimentalForeignApi
 import libui.compose.*
 import libui.uiQuit
 
+@OptIn(ExperimentalForeignApi::class)
 fun main() {
     println("HELLOOOOOO!!!")
 

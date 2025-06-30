@@ -60,6 +60,7 @@ kotlin {
         sourceSets.all {
             languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
             languageSettings.optIn("kotlinx.cinterop.UnsafeNumber")
+            languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
         }
     }
 
@@ -71,10 +72,11 @@ kotlin {
         compilations["main"].apply {
             cinterops.create("libui") {
                 includeDirs("$buildDir/libui/${konanTarget.name}")
+                defFile(project.file("src/nativeInterop/cinterop/libui.def"))
             }
-            kotlinOptions.freeCompilerArgs = listOf(
+            compilerOptions.options.freeCompilerArgs.addAll(listOf(
                 "-include-binary", "$buildDir/libui/${konanTarget.name}/libui.a"
-            )
+            ))
         }
     }
 }

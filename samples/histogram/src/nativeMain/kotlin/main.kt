@@ -71,33 +71,33 @@ fun main() = appWindow(
                 MiterLimit = uiDrawDefaultMiterLimit
             }
 
-            draw {
-                val graphWidth = graphWidth(it.AreaWidth)
-                val graphHeight = graphHeight(it.AreaHeight)
+            draw { context, params ->
+                val graphWidth = graphWidth(params.AreaWidth)
+                val graphHeight = graphHeight(params.AreaHeight)
                 val graphColor = colorButton.value
                 val xs = DoubleArray(numPoints)
                 val ys = DoubleArray(numPoints)
                 pointLocations(graphWidth, graphHeight, xs, ys)
 
                 // fill the area with white
-                fill(brush.solid(colorWhite)) {
-                    rectangle(0.0, 0.0, it.AreaWidth, it.AreaHeight)
+                context.fill(brush.solid(colorWhite)) {
+                    rectangle(0.0, 0.0, params.AreaWidth, params.AreaHeight)
                 }
 
                 // draw the axes
-                stroke(brush.solid(colorBlack), stroke) {
+                context.stroke(brush.solid(colorBlack), stroke) {
                     figure(xoffLeft, yoffTop)
                     lineTo(xoffLeft, yoffTop + graphHeight)
                     lineTo(xoffLeft + graphWidth, yoffTop + graphHeight)
                 }
 
                 // transform the coordinate space so (0, 0) is the top-left corner of the graph
-                transform {
+                context.transform {
                     translate(xoffLeft, yoffTop)
                 }
 
                 // create the fill for the graph below the graph line
-                fill(brush.solid(graphColor, opacity = 0.5)) {
+                context.fill(brush.solid(graphColor, opacity = 0.5)) {
                     figure(xs[0], ys[0])
                     for (i in 1 until numPoints)
                         lineTo(xs[i], ys[i])
@@ -107,7 +107,7 @@ fun main() = appWindow(
                 }
 
                 // draw the histogram line
-                stroke(brush.solid(graphColor), stroke) {
+                context.stroke(brush.solid(graphColor), stroke) {
                     figure(xs[0], ys[0])
                     for (i in 1 until numPoints)
                         lineTo(xs[i], ys[i])
@@ -115,7 +115,7 @@ fun main() = appWindow(
 
                 // draw the point being hovered over
                 if (currentPoint != -1) {
-                    fill(brush) {
+                    context.fill(brush) {
                         figureWithArc(
                             xs[currentPoint], ys[currentPoint], pointRadius,
                             startAngle = 0.0, sweep = 6.23

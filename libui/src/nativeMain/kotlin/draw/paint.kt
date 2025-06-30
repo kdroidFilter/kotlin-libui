@@ -31,7 +31,33 @@ fun DrawContext.fill(
 
 /** Draw a path filled with a color. */
 @OptIn(ExperimentalForeignApi::class)
+fun CPointer<uiDrawContext>.fill(
+    mode: uiDrawFillMode,
+    brush: Brush,
+    block: Path.() -> Unit
+) {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    val path = Path(mode)
+    path.block()
+    uiDrawPathEnd(path.ptr)
+    uiDrawFill(this, path.ptr, brush.ptr)
+    path.dispose()
+}
+
+/** Draw a path filled with a color. */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawContext.fill(brush: Brush, block: Path.() -> Unit) {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return fill(uiDrawFillModeWinding, brush, block)
+}
+
+/** Draw a path filled with a color. */
+@OptIn(ExperimentalForeignApi::class)
+fun CPointer<uiDrawContext>.fill(brush: Brush, block: Path.() -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
@@ -58,7 +84,34 @@ fun DrawContext.stroke(
 
 /** Draw a path in the context. */
 @OptIn(ExperimentalForeignApi::class)
+fun CPointer<uiDrawContext>.stroke(
+    mode: uiDrawFillMode,
+    brush: Brush,
+    stroke: Stroke,
+    block: Path.() -> Unit
+) {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    val path = Path(mode)
+    path.block()
+    uiDrawPathEnd(path.ptr)
+    uiDrawStroke(this, path.ptr, brush.ptr, stroke.ptr)
+    path.dispose()
+}
+
+/** Draw a path in the context. */
+@OptIn(ExperimentalForeignApi::class)
 fun DrawContext.stroke(brush: Brush, stroke: Stroke, block: Path.() -> Unit) {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return stroke(uiDrawFillModeWinding, brush, stroke, block)
+}
+
+/** Draw a path in the context. */
+@OptIn(ExperimentalForeignApi::class)
+fun CPointer<uiDrawContext>.stroke(brush: Brush, stroke: Stroke, block: Path.() -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
@@ -75,6 +128,19 @@ fun DrawContext.transform(block: Matrix.() -> Unit) {
     uiDrawMatrixSetIdentity(matrix.ptr)
     matrix.block()
     uiDrawTransform(ptr, matrix.ptr)
+    matrix.dispose()
+}
+
+/** Apply a different transform matrix to the context. */
+@OptIn(ExperimentalForeignApi::class)
+fun CPointer<uiDrawContext>.transform(block: Matrix.() -> Unit) {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    val matrix = Matrix()
+    uiDrawMatrixSetIdentity(matrix.ptr)
+    matrix.block()
+    uiDrawTransform(this, matrix.ptr)
     matrix.dispose()
 }
 

@@ -41,10 +41,10 @@ subprojects {
                 commandLine("$toolchainBinDir/windres", inFile, "-D_${buildType.name}", "-O", "coff", "-o", outFile)
                 environment("PATH", "$toolchainBinDir;${System.getenv("PATH")}")
 
-                dependsOn(compilation.compileKotlinTask)
+                dependsOn(compilation.compileTaskProvider)
             }
 
-            linkTask.dependsOn(windresTask)
+            linkTaskProvider.configure { dependsOn(windresTask) }
             linkerOpts(outFile.toString())
         }
 
@@ -54,6 +54,7 @@ subprojects {
                 dependencies {
                     implementation(project(":libui"))
                 }
+                languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
             }
             binaries {
                 executable(listOf(RELEASE, DEBUG)) {

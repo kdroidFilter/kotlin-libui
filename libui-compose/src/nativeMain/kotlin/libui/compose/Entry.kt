@@ -37,6 +37,7 @@ fun runLibUI(content: @Composable WindowScope.() -> Unit) = withLibUI {
         scope.launch { recomposer.runRecomposeAndApplyChanges() }
 
         composeLibUI(recomposer, content) {
+            @OptIn(ExperimentalForeignApi::class)
             uiMain()
             uiDispatcher.close()
         }
@@ -52,7 +53,7 @@ fun runLibUI(content: @Composable WindowScope.() -> Unit) = withLibUI {
 private inline fun composeLibUI(
     parent: CompositionContext,
     noinline content: @Composable WindowScope.() -> Unit,
-    block: () -> Unit
+    @OptIn(ExperimentalForeignApi::class) block: () -> Unit
 ) {
     val applier = MutableListApplier<CPointer<uiWindow>>(mutableListOf())
     val composition = Composition(applier, parent)
