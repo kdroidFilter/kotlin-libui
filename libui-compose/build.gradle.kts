@@ -38,9 +38,5 @@ kotlin {
             }
         }
 
-        binaries {
-            executable(listOf(RELEASE, DEBUG)) {
-            }
-        }
     }
 }

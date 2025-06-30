@@ -3,6 +3,7 @@ package libui.compose
 import androidx.compose.runtime.Applier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
+import androidx.compose.runtime.currentComposer
 import cnames.structs.uiForm
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -39,6 +40,29 @@ fun Form(
     )
 }
 
+/**
+ * A form item that has a label and a control.
+ *
+ * @param label The label for the form item.
+ * @param stretchy Whether the form item should be stretchy.
+ * @param content The content of the form item.
+ */
+@Composable
+fun FormItem(
+    label: String,
+    stretchy: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    val composer = currentComposer
+    val applier = composer.applier as FormApplier
+
+    // Set the label and stretchy flag for the next item
+    applier.nextLabel = label
+    applier.nextStretchy = stretchy
+
+    content()
+}
+
 
 /**
  * An applier for form containers that handles adding and removing children.
@@ -47,15 +71,26 @@ fun Form(
  */
 class FormApplier @OptIn(ExperimentalForeignApi::class) constructor(private val form: CPointer<uiForm>) : AppendDeleteApplier() {
     /**
+     * The label for the next item to be appended.
+     */
+    var nextLabel: String = ""
+
+    /**
+     * Whether the next item to be appended should be stretchy.
+     */
+    var nextStretchy: Boolean = false
+
+    /**
      * Appends an item to the form container.
      *
      * @param instance The control to append.
      */
     @ExperimentalForeignApi
     override fun appendItem(instance: CPointer<uiControl>?) {
-        val label = ""
-        val isStretchy = false
-        uiFormAppend(form, label, instance, if (isStretchy) 1 else 0)
+        uiFormAppend(form, nextLabel, instance, if (nextStretchy) 1 else 0)
+        // Reset for next item
+        nextLabel = ""
+        nextStretchy = false
     }
 
     /**
