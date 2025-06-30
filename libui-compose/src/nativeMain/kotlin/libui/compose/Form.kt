@@ -54,13 +54,19 @@ fun FormItem(
     content: @Composable () -> Unit
 ) {
     val composer = currentComposer
-    val applier = composer.applier as FormApplier
+    val applier = composer.applier
 
-    // Set the label and stretchy flag for the next item
-    applier.nextLabel = label
-    applier.nextStretchy = stretchy
+    if (applier is FormApplier) {
+        // Register the label and stretchy flag for the next item
+        applier.registerNextLabel(label)
+        applier.registerNextStretchy(stretchy)
 
-    content()
+        // Execute the content
+        content()
+    } else {
+        // If we're not in a Form, just execute the content
+        content()
+    }
 }
 
 
@@ -71,14 +77,52 @@ fun FormItem(
  */
 class FormApplier @OptIn(ExperimentalForeignApi::class) constructor(private val form: CPointer<uiForm>) : AppendDeleteApplier() {
     /**
+     * List of labels for items to be appended, in order of registration.
+     */
+    private val pendingLabels = mutableListOf<String>()
+
+    /**
+     * List of stretchy flags for items to be appended, in order of registration.
+     */
+    private val pendingStretchy = mutableListOf<Boolean>()
+
+    /**
      * The label for the next item to be appended.
+     * This is kept for backward compatibility.
      */
     var nextLabel: String = ""
+        set(value) {
+            field = value
+            pendingLabels.add(value)
+        }
 
     /**
      * Whether the next item to be appended should be stretchy.
+     * This is kept for backward compatibility.
      */
     var nextStretchy: Boolean = false
+        set(value) {
+            field = value
+            pendingStretchy.add(value)
+        }
+
+    /**
+     * Registers the label for the next item to be appended.
+     * 
+     * @param label The label for the next item.
+     */
+    fun registerNextLabel(label: String) {
+        pendingLabels.add(label)
+    }
+
+    /**
+     * Registers the stretchy flag for the next item to be appended.
+     * 
+     * @param stretchy Whether the next item should be stretchy.
+     */
+    fun registerNextStretchy(stretchy: Boolean) {
+        pendingStretchy.add(stretchy)
+    }
 
     /**
      * Appends an item to the form container.
@@ -87,8 +131,13 @@ class FormApplier @OptIn(ExperimentalForeignApi::class) constructor(private val 
      */
     @ExperimentalForeignApi
     override fun appendItem(instance: CPointer<uiControl>?) {
-        uiFormAppend(form, nextLabel, instance, if (nextStretchy) 1 else 0)
-        // Reset for next item
+        // Get the label and stretchy flag for the current item or use defaults
+        val label = if (pendingLabels.isNotEmpty()) pendingLabels.removeAt(0) else ""
+        val stretchy = if (pendingStretchy.isNotEmpty()) pendingStretchy.removeAt(0) else false
+
+        uiFormAppend(form, label, instance, if (stretchy) 1 else 0)
+
+        // Reset for next item (for backward compatibility)
         nextLabel = ""
         nextStretchy = false
     }
