@@ -6,6 +6,7 @@ package libui.compose
 import androidx.compose.runtime.Applier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
+import androidx.compose.runtime.currentComposer
 import cnames.structs.uiBox
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -50,6 +51,32 @@ fun HBox(
 }
 
 /**
+ * A box item that can be stretchy.
+ *
+ * @param stretchy Whether the box item should be stretchy.
+ * @param content The content of the box item.
+ */
+@Composable
+fun BoxItem(
+    stretchy: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    val composer = currentComposer
+    val applier = composer.applier
+
+    if (applier is BoxApplier) {
+        // Register the stretchy flag for the next item
+        applier.registerNextStretchy(stretchy)
+
+        // Execute the content
+        content()
+    } else {
+        // If we're not in a Box, just execute the content
+        content()
+    }
+}
+
+/**
  * Internal implementation for box containers.
  *
  * @param ctor A function that creates the box container.
@@ -89,6 +116,20 @@ class BoxApplier @OptIn(ExperimentalForeignApi::class) constructor(
     private val box: CPointer<uiBox>,
 ) : AppendDeleteApplier() {
     /**
+     * List of stretchy flags for items to be appended, in order of registration.
+     */
+    private val pendingStretchy = mutableListOf<Boolean>()
+
+    /**
+     * Registers the stretchy flag for the next item to be appended.
+     * 
+     * @param stretchy Whether the next item should be stretchy.
+     */
+    fun registerNextStretchy(stretchy: Boolean) {
+        pendingStretchy.add(stretchy)
+    }
+
+    /**
      * Deletes an item from the box at the specified index.
      *
      * @param index The index of the item to delete.
@@ -104,7 +145,8 @@ class BoxApplier @OptIn(ExperimentalForeignApi::class) constructor(
      * @param instance The control to append.
      */
     override fun appendItem(instance: CPointer<uiControl>?) {
-        val isStretchy = false
+        // Get the stretchy flag for the current item or use default (false)
+        val isStretchy = if (pendingStretchy.isNotEmpty()) pendingStretchy.removeAt(0) else false
         uiBoxAppend(box, instance, if (isStretchy) 1 else 0)
     }
 }

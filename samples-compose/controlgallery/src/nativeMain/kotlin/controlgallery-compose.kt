@@ -22,17 +22,17 @@ fun main() = runLibUI {
                             text = "Button",
                             onClick = {}
                         )
-                        
+
                         Checkbox(
                             label = "Checkbox",
                             checked = remember { mutableStateOf(false) }
                         )
                     }
-                    
+
                     Label("This is a label. Right now, labels can only span one line.")
-                    
+
                     HorizontalSeparator()
-                    
+
                     Group(title = "Entries") {
                         Form {
                             FormItem(label = "Text Field") {
@@ -40,26 +40,26 @@ fun main() = runLibUI {
                                     text = remember { mutableStateOf("") }
                                 )
                             }
-                            
+
                             FormItem(label = "Password Field") {
                                 PasswordField(
                                     text = remember { mutableStateOf("") }
                                 )
                             }
-                            
+
                             FormItem(label = "Search Field") {
                                 SearchField(
                                     text = remember { mutableStateOf("") }
                                 )
                             }
-                            
+
                             FormItem(label = "Multiline Field") {
                                 MultilineEntry(
                                     text = remember { mutableStateOf("") },
                                     readOnly = false
                                 )
                             }
-                            
+
                             FormItem(label = "Multiline Field No Wrap") {
                                 NonWrappingMultilineEntry(
                                     text = remember { mutableStateOf("") },
@@ -70,62 +70,66 @@ fun main() = runLibUI {
                     }
                 }
             }
-            
+
             // Numbers and Lists Tab
             TabItem("Numbers and Lists") {
                 HBox {
-                    Group(title = "Numbers") {
-                        VBox {
-                            val value = remember { mutableStateOf(0) }
-                            
-                            Spinbox(
-                                value = value,
-                                min = 0,
-                                max = 100
-                            )
-                            
-                            Slider(
-                                value = value,
-                                min = 0,
-                                max = 100
-                            )
-                            
-                            ProgressBar(value = value.value)
-                            
-                            ProgressBar() // Indeterminate
+                    BoxItem(stretchy = true) {
+                        Group(title = "Numbers") {
+                            VBox {
+                                val value = remember { mutableStateOf(0) }
+
+                                Spinbox(
+                                    value = value,
+                                    min = 0,
+                                    max = 100
+                                )
+
+                                Slider(
+                                    value = value,
+                                    min = 0,
+                                    max = 100
+                                )
+
+                                ProgressBar(value = value.value)
+
+                                ProgressBar() // Indeterminate
+                            }
                         }
                     }
-                    
-                    Group(title = "Lists") {
-                        VBox {
-                            val selectedCombobox = remember { mutableStateOf(0) }
-                            val comboboxItems = remember { listOf("Combobox Item 1", "Combobox Item 2", "Combobox Item 3") }
-                            
-                            Combobox(
-                                selected = selectedCombobox,
-                                items = comboboxItems
-                            )
-                            
-                            val editableText = remember { mutableStateOf("") }
-                            val editableItems = remember { listOf("Editable Item 1", "Editable Item 2", "Editable Item 3") }
-                            
-                            EditableCombobox(
-                                text = editableText,
-                                items = editableItems
-                            )
-                            
-                            val selectedRadio = remember { mutableStateOf(0) }
-                            val radioOptions = remember { listOf("Radio Button 1", "Radio Button 2", "Radio Button 3") }
-                            
-                            RadioButtons(
-                                selected = selectedRadio,
-                                options = radioOptions
-                            )
+
+                    BoxItem(stretchy = true) {
+                        Group(title = "Lists") {
+                            VBox {
+                                val selectedCombobox = remember { mutableStateOf(0) }
+                                val comboboxItems = remember { listOf("Combobox Item 1", "Combobox Item 2", "Combobox Item 3") }
+
+                                Combobox(
+                                    selected = selectedCombobox,
+                                    items = comboboxItems
+                                )
+
+                                val editableText = remember { mutableStateOf("") }
+                                val editableItems = remember { listOf("Editable Item 1", "Editable Item 2", "Editable Item 3") }
+
+                                EditableCombobox(
+                                    text = editableText,
+                                    items = editableItems
+                                )
+
+                                val selectedRadio = remember { mutableStateOf(0) }
+                                val radioOptions = remember { listOf("Radio Button 1", "Radio Button 2", "Radio Button 3") }
+
+                                RadioButtons(
+                                    selected = selectedRadio,
+                                    options = radioOptions
+                                )
+                            }
                         }
                     }
                 }
             }
-            
+
             // Data Choosers Tab
             TabItem("Data Choosers") {
                 HBox {
