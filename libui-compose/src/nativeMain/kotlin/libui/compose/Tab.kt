@@ -43,11 +43,13 @@ fun TabPane(
  * A tab item that has a name and content. This function is provided for backward compatibility.
  *
  * @param name The name of the tab.
+ * @param margined Whether the tab content should have margins.
  * @param content The content of the tab.
  */
 @Composable
 fun TabItem(
     name: String,
+    margined: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val tabName = remember { name } // Mémoriser le nom pour qu'il reste stable
@@ -64,8 +66,9 @@ fun TabItem(
     val applier = composer.applier
 
     if (applier is TabApplier) {
-        // Enregistrer le nom pour cet onglet spécifique
+        // Enregistrer le nom et le flag margined pour cet onglet spécifique
         applier.registerNextTabName(tabName)
+        applier.registerNextMargined(margined)
 
         // Ajouter le contenu
         vboxContent()
@@ -88,21 +91,16 @@ class TabPaneScope @OptIn(ExperimentalForeignApi::class) constructor(private val
      */
     @Composable
     fun page(name: String, margined: Boolean = true, content: @Composable () -> Unit) {
-        // On stocke l'index de l'onglet pour pouvoir définir ses marges après l'ajout
+        // Récupérer l'applier du TabPane parent
         val tabApplier = currentComposer.applier as TabApplier
-        val index = tabApplier.controls.size
 
-        // On mémorise le nom et on ajoute le contenu
+        // Enregistrer le nom et le flag margined pour cet onglet spécifique
         tabApplier.registerNextTabName(name)
+        tabApplier.registerNextMargined(margined)
 
         // Ajouter le contenu dans un VBox
         VBox(padded = true) {
             content()
-        }
-
-        // Définir les marges après l'ajout de l'onglet
-        if (margined) {
-            uiTabSetMargined(tab, index, 1)
         }
     }
 }
@@ -119,12 +117,37 @@ class TabApplier @OptIn(ExperimentalForeignApi::class) constructor(private val t
     private val pendingTabNames = mutableListOf<String>()
 
     /**
+     * Liste des flags margined pour les onglets dans l'ordre d'enregistrement.
+     */
+    private val pendingMargined = mutableListOf<Boolean>()
+
+    /**
      * Enregistre le nom du prochain onglet à ajouter.
      * 
      * @param name Le nom de l'onglet.
      */
     fun registerNextTabName(name: String) {
         pendingTabNames.add(name)
+    }
+
+    /**
+     * Enregistre si le prochain onglet doit avoir des marges.
+     * 
+     * @param margined Si l'onglet doit avoir des marges.
+     */
+    fun registerNextMargined(margined: Boolean) {
+        pendingMargined.add(margined)
+    }
+
+    /**
+     * Définit si l'onglet à l'index spécifié doit avoir des marges.
+     * 
+     * @param index L'index de l'onglet.
+     * @param margined Si l'onglet doit avoir des marges.
+     */
+    @OptIn(ExperimentalForeignApi::class)
+    fun setMargined(index: Int, margined: Boolean) {
+        uiTabSetMargined(tab, index, if (margined) 1 else 0)
     }
 
     /**
@@ -137,8 +160,14 @@ class TabApplier @OptIn(ExperimentalForeignApi::class) constructor(private val t
         // Récupérer le nom pour l'onglet actuel ou utiliser un nom par défaut
         val name = if (pendingTabNames.isNotEmpty()) pendingTabNames.removeAt(0) else "Tab ${controls.size}"
 
+        // Récupérer si l'onglet doit avoir des marges
+        val margined = if (pendingMargined.isNotEmpty()) pendingMargined.removeAt(0) else true
+
         // Ajouter l'onglet avec son nom
         uiTabAppend(tab, name, instance)
+
+        // Définir les marges
+        setMargined(controls.size - 1, margined)
     }
 
     /**
@@ -161,7 +190,13 @@ class TabApplier @OptIn(ExperimentalForeignApi::class) constructor(private val t
         // Récupérer le nom pour l'onglet actuel ou utiliser un nom par défaut
         val name = if (pendingTabNames.isNotEmpty()) pendingTabNames.removeAt(0) else "Tab $index"
 
+        // Récupérer si l'onglet doit avoir des marges
+        val margined = if (pendingMargined.isNotEmpty()) pendingMargined.removeAt(0) else true
+
         // Insérer l'onglet avec son nom
         uiTabInsertAt(tab, name, index, instance)
+
+        // Définir les marges
+        setMargined(index, margined)
     }
 }
