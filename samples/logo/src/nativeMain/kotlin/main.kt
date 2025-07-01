@@ -23,15 +23,15 @@ fun main() = appWindow(
                 }
             }
 
-            draw {
-                fill(uiDrawFillModeWinding, brush.solid(0xFFFFFF)) {
-                    rectangle(0.0, 0.0, it.AreaWidth, it.AreaHeight)
+            draw { context, params ->
+                context.fill(uiDrawFillModeWinding, brush.solid(0xFFFFFF)) {
+                    rectangle(0.0, 0.0, params.AreaWidth, params.AreaHeight)
                 }
 
-                transform { scale(0.0, 0.0, it.AreaWidth / 60.0, it.AreaHeight / 60.0) }
-                transform { rotate(30.0, 30.0, angle) }
+                context.transform { scale(0.0, 0.0, params.AreaWidth / 60.0, params.AreaHeight / 60.0) }
+                context.transform { rotate(30.0, 30.0, angle) }
 
-                fill(
+                context.fill(
                     uiDrawFillModeWinding,
                     brush.linear(
                         Point(0.0, 60.0),
@@ -49,7 +49,7 @@ fun main() = appWindow(
                     closeFigure()
                 }
 
-                fill(
+                context.fill(
                     uiDrawFillModeWinding,
                     brush.linear(
                         Point(10.0, 20.0),
@@ -66,7 +66,7 @@ fun main() = appWindow(
                     closeFigure()
                 }
 
-                fill(
+                context.fill(
                     uiDrawFillModeWinding,
                     brush.linear(
                         Point(0.0, 60.0),

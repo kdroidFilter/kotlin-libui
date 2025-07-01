@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.jetbrainsCompose)
-
+    alias(libs.plugins.compose.compiler)
 }
 
 val os = org.gradle.internal.os.OperatingSystem.current()!!
@@ -38,9 +38,5 @@ kotlin {
             }
         }
 
-        binaries {
-            executable(listOf(RELEASE, DEBUG)) {
-            }
-        }
     }
 }

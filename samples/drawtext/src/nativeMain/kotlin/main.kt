@@ -96,8 +96,8 @@ fun main() = appWindow(
         area = drawarea {
             val str = makeAttributedString()
             val georgia = font("Georgia", 12.0)
-            draw {
-                text(str, if (fontButton.enabled) fontButton.value else georgia, it.AreaWidth, align.value.convert(), 0.0, 0.0)
+            draw { context, params ->
+                context.text(str, if (fontButton.enabled) fontButton.value else georgia, params.AreaWidth, align.value.convert<UInt>(), 0.0, 0.0)
             }
             stretchy = true
         }

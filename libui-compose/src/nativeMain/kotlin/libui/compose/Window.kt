@@ -5,11 +5,38 @@ import cnames.structs.uiWindow
 import kotlinx.cinterop.*
 import libui.*
 
+/**
+ * State holder for a window.
+ * 
+ * @param contentSize The initial size of the window content area.
+ */
 class WindowState(contentSize: SizeInt) {
+    /**
+     * The current size of the window content area.
+     * This will be updated automatically when the window is resized.
+     */
     var contentSize by mutableStateOf(contentSize)
 }
 
+/**
+ * Scope for window-related composables.
+ * This class is used internally by the [runLibUI] function.
+ */
 class WindowScope internal constructor() {
+    /**
+     * Creates a window with the specified parameters.
+     *
+     * @param onCloseRequest Callback that will be invoked when the user attempts to close the window.
+     * @param state The state of the window, including its size.
+     * @param title The title of the window.
+     * @param hasMenubar Whether the window has a menubar.
+     * @param borderless Whether the window is borderless.
+     * @param margined Whether the window has margins.
+     * @param fullscreen Whether the window is fullscreen.
+     * @param isVisible Whether the window is visible.
+     * @param enabled Whether the window is enabled.
+     * @param content The content of the window.
+     */
     @OptIn(ExperimentalForeignApi::class)
     @Composable
     fun Window(

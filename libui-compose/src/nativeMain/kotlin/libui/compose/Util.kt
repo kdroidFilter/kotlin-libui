@@ -50,10 +50,17 @@ internal fun CPointer<ByteVar>.uiText(): String {
     }
 }
 
+/**
+ * Remembers a control across recompositions.
+ * 
+ * @param key An optional key to force recreation of the control when it changes.
+ * @param block A function that creates the control.
+ * @return A [Control] instance that will be remembered across recompositions.
+ */
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-internal fun <T: CPointed> rememberControl(block: () -> CPointer<T>): Control<T> {
-    return remember { Control(block()) }
+internal fun <T: CPointed> rememberControl(vararg key: Any?, block: () -> CPointer<T>): Control<T> {
+    return remember(*key) { Control(block()) }
 }
 
 @OptIn(ExperimentalForeignApi::class)
@@ -149,24 +156,75 @@ abstract class SingletonApplier<T> : AbstractApplier<T?>(null) {
     }
 }
 
+/**
+ * Abstract applier for components that can have multiple children.
+ * Provides default implementations for common operations, but requires subclasses to implement
+ * [deleteItem] and [appendItem].
+ */
 @OptIn(ExperimentalForeignApi::class)
 abstract class AppendDeleteApplier : Applier<CPointer<uiControl>?> {
+    /**
+     * Deletes the item at the specified index.
+     * 
+     * @param index The index of the item to delete.
+     */
     abstract fun deleteItem(index: Int)
+
+    /**
+     * Appends an item to the end of the container.
+     * 
+     * @param instance The control to append.
+     */
     abstract fun appendItem(instance: CPointer<uiControl>?)
 
+    /**
+     * Inserts an item at the specified index.
+     * Subclasses should override this method to use the native insertAt method if available.
+     * 
+     * @param index The index at which to insert the item.
+     * @param instance The control to insert.
+     */
     @OptIn(ExperimentalForeignApi::class)
     open fun insertItemAt(index: Int, instance: CPointer<uiControl>?) {
+        // Default implementation removes all controls after the insertion index and re-adds them
+        // Subclasses should override this method if a more efficient implementation is available
+        val tempControls = controls.drop(index).toList()
+
+        // Remove all controls after the insertion index
         for (i in controls.lastIndex downTo index) {
             deleteItem(i)
         }
+
+        // Add the new control
         appendItem(instance)
-        for (control in controls.drop(index)) {
+
+        // Re-add the removed controls
+        for (control in tempControls) {
             appendItem(control)
         }
     }
 
+    /**
+     * Moves items from one position to another.
+     * Subclasses can override this method to use the native move method if available.
+     * 
+     * @param from The starting index.
+     * @param to The destination index.
+     * @param count The number of items to move.
+     */
+    @OptIn(ExperimentalForeignApi::class)
+    open fun moveItems(from: Int, to: Int, count: Int) {
+        // Default implementation removes and re-adds all items
+        // Subclasses should override this method if a more efficient implementation is available
+        for (i in controls.lastIndex downTo 0) {
+            deleteItem(i)
+        }
+        for (control in controls) {
+            appendItem(control)
+        }
+    }
 
-    private val controls = mutableListOf<CPointer<uiControl>>()
+    val controls = mutableListOf<CPointer<uiControl>>()
     private val listApplier = MutableListApplier(controls)
 
     override fun clear() {
@@ -185,15 +243,7 @@ abstract class AppendDeleteApplier : Applier<CPointer<uiControl>?> {
 
     override fun move(from: Int, to: Int, count: Int) {
         listApplier.move(from, to, count)
-
-        // TODO: This could be optimised to not remove everything.
-
-        for (i in controls.lastIndex downTo 0) {
-            deleteItem(i)
-        }
-        for (control in controls) {
-            appendItem(control)
-        }
+        moveItems(from, to, count)
     }
 
     override fun insertTopDown(index: Int, instance: CPointer<uiControl>?) {
