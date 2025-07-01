@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import cnames.structs.uiWindow
 import kotlinx.cinterop.*
 import libui.*
+import libui.compose.setMainWindowPtr
 
 /**
  * State holder for a window.
@@ -70,6 +71,9 @@ class WindowScope internal constructor() {
 
         val onCloseRef = rememberStableRef(onCloseRequest)
         val stateRef = rememberStableRef(state)
+
+        // Set the main window pointer for dialogs
+        setMainWindowPtr(control.ptr)
 
         ComposeNode<CPointer<uiWindow>, MutableListApplier<CPointer<uiWindow>>>(
             factory = { control.ptr },

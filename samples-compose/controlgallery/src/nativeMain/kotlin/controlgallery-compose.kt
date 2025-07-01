@@ -2,6 +2,7 @@ import androidx.compose.runtime.*
 import libui.compose.*
 import libui.uiQuit
 import kotlinx.cinterop.ExperimentalForeignApi
+import cnames.structs.uiWindow
 
 @OptIn(ExperimentalForeignApi::class)
 fun main() = runLibUI {
@@ -135,16 +136,56 @@ fun main() = runLibUI {
             // Data Choosers Tab
             TabItem("Data Choosers") {
                 HBox {
-                    VBox {
-                        DatePicker()
-                        TimePicker()
-                        DateTimePicker()
-                        FontButton()
-                        ColorButton(color = remember { mutableStateOf(Color(0.0, 0.0, 0.0)) })
+                    // Left column - Date/Time pickers
+                    BoxItem(stretchy = true) {
+                        VBox {
+                            DatePicker()
+                            TimePicker()
+                            DateTimePicker()
+                            FontButton()
+                            ColorButton(color = remember { mutableStateOf(Color(0.0, 0.0, 0.0)) })
+                        }
                     }
-                    VBox {
-                        val text = remember { mutableStateOf("") }
-                        TextField(text)
+
+                    // Separator
+                    HorizontalSeparator()
+
+                    // Right column - File dialogs and message boxes
+                    BoxItem(stretchy = true) {
+                        VBox {
+                            // File dialogs
+                            Form {
+                                FileDialogField(
+                                    label = "Open File",
+                                    buttonText = "Open File"
+                                )
+
+                                FolderDialogField(
+                                    label = "Open Folder",
+                                    buttonText = "Open Folder"
+                                )
+
+                                SaveFileDialogField(
+                                    label = "Save File",
+                                    buttonText = "Save File"
+                                )
+                            }
+
+                            // Message boxes
+                            HBox {
+                                MessageBoxButton(
+                                    text = "Message Box",
+                                    messageText = "This is a normal message box.",
+                                    messageDetails = "More detailed information can be shown here."
+                                )
+
+                                ErrorMessageBoxButton(
+                                    text = "Error Box",
+                                    messageText = "This message box describes an error.",
+                                    messageDetails = "More detailed information can be shown here."
+                                )
+                            }
+                        }
                     }
                 }
             }
