@@ -1,5 +1,7 @@
 import libui.ktx.*
+import kotlinx.cinterop.ExperimentalForeignApi
 
+@OptIn(ExperimentalForeignApi::class)
 fun TabPane.Page.basicControls() = vbox {
     hbox {
         button("Button")
@@ -28,6 +30,7 @@ fun TabPane.Page.basicControls() = vbox {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun TabPane.Page.numbers() = hbox {
     group("Numbers") { stretchy = true }.vbox {
         val spinbox = spinbox(min = 0, max = 100)
@@ -62,6 +65,7 @@ fun TabPane.Page.numbers() = hbox {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun TabPane.Page.dataChoosers() = hbox {
     vbox {
         datepicker()
@@ -136,6 +140,7 @@ fun TabPane.Page.dataChoosers() = hbox {
 }
 
 
+@OptIn(ExperimentalForeignApi::class)
 fun main() = appWindow(
     title = "libui Control Gallery",
     width = 640,
