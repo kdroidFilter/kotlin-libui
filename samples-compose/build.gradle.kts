@@ -3,6 +3,11 @@
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+plugins {
+    alias(libs.plugins.jetbrainsCompose) apply false
+    alias(libs.plugins.compose.compiler) apply false
+}
+
 val os = org.gradle.internal.os.OperatingSystem.current()!!
 val isRunningInIde: Boolean = System.getProperty("idea.active") == "true"
 
@@ -10,11 +15,12 @@ val samplesResourcesDir = "$projectDir/resources"
 
 subprojects {
     apply(plugin = "kotlin-multiplatform")
+    apply(plugin = "org.jetbrains.compose")
+    apply(plugin = "org.jetbrains.kotlin.plugin.compose")
 
     configure<KotlinMultiplatformExtension> {
         if (os.isWindows) {
             mingwX64("windows64")
-
         }
         if (os.isLinux) {
             linuxX64("linux")
@@ -52,7 +58,7 @@ subprojects {
             sourceSets["${targetName}Main"].apply {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 dependencies {
-                    implementation(project(":libui"))
+                    implementation(project(":libui-compose"))
                 }
                 languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
             }

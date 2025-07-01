@@ -37,6 +37,7 @@ fun runLibUI(content: @Composable WindowScope.() -> Unit) = withLibUI {
         scope.launch { recomposer.runRecomposeAndApplyChanges() }
 
         composeLibUI(recomposer, content) {
+            @OptIn(ExperimentalForeignApi::class)
             uiMain()
             uiDispatcher.close()
         }
@@ -48,11 +49,18 @@ fun runLibUI(content: @Composable WindowScope.() -> Unit) = withLibUI {
     }
 }
 
+/**
+ * Internal function that sets up the composition for a libui application.
+ * 
+ * @param parent The parent composition context.
+ * @param content The content of the application.
+ * @param block A block of code to execute after setting up the composition.
+ */
 @OptIn(ExperimentalForeignApi::class)
 private inline fun composeLibUI(
     parent: CompositionContext,
     noinline content: @Composable WindowScope.() -> Unit,
-    block: () -> Unit
+    @OptIn(ExperimentalForeignApi::class) block: () -> Unit
 ) {
     val applier = MutableListApplier<CPointer<uiWindow>>(mutableListOf())
     val composition = Composition(applier, parent)
@@ -64,6 +72,11 @@ private inline fun composeLibUI(
     composition.dispose()
 }
 
+/**
+ * A coroutine dispatcher that dispatches coroutines to the libui main thread.
+ * 
+ * @param backup A backup dispatcher to use when this dispatcher is closed.
+ */
 private class LibUiDispatcher(private val backup: CoroutineDispatcher) : CloseableCoroutineDispatcher() {
     private var isClosed: Boolean = false
 

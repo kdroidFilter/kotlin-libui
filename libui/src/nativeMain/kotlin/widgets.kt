@@ -465,10 +465,10 @@ open class DateTimePicker internal constructor(
 
     /** The current value as posix `struct tm` */
     @OptIn(ExperimentalForeignApi::class)
-    fun getValue(value: CPointer<tm>) = uiDateTimePickerTime(ptr, value)
+    fun getValue(value: CPointer<tm>) = uiDateTimePickerTime(ptr, value.toCnamesStructsTm())
 
     /** Set current value from posix `struct tm` */
-    fun setValue(value: CPointer<tm>) = uiDateTimePickerSetTime(ptr, value)
+    fun setValue(value: CPointer<tm>) = uiDateTimePickerSetTime(ptr, value.toCnamesStructsTm())
 
     /** The current value in Unix epoch */
     var value: time_t
@@ -487,7 +487,7 @@ open class DateTimePicker internal constructor(
     fun textValue(format: String = defaultFormat): String = memScoped {
         val tm = alloc<tm>()
         val buf = allocArray<ByteVar>(64)
-        uiDateTimePickerTime(ptr, tm.ptr)
+        uiDateTimePickerTime(ptr, tm.ptr.toCnamesStructsTm())
         strftime(buf, 64u, format, tm.ptr)
         return buf.toKString()
     }

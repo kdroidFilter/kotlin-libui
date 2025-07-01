@@ -25,6 +25,10 @@ gradleEnterprise {
 include(":libui")
 include(":libui-compose")
 
+include(":samples-compose:hello")
+include(":samples-compose:form")
+include(":samples-compose:controlgallery")
+
 include(":samples:controlgallery")
 include(":samples:datetime")
 include(":samples:drawtext")

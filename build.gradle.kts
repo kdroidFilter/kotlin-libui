@@ -4,7 +4,6 @@
 plugins {
     alias(libs.plugins.kotlin) apply false
     alias(libs.plugins.download) apply false
-    alias(libs.plugins.dokka)
 }
 
 allprojects {
@@ -13,8 +12,4 @@ allprojects {
         maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
         google()
     }
-}
-
-apply {
-    from("dokka.gradle")
 }

@@ -21,6 +21,21 @@ fun DrawContext.text(
     layout.dispose()
 }
 
+/** draws formatted text with the top-left point at (`x`, `y`). */
+@OptIn(ExperimentalForeignApi::class)
+fun CPointer<uiDrawContext>.text(
+    string: AttributedString,
+    defaultFont: Font,
+    width: Double,
+    align: uiDrawTextAlign,
+    x: Double,
+    y: Double
+) {
+    val layout = TextLayout(string, defaultFont, width, align)
+    uiDrawText(this, layout.ptr, x, y)
+    layout.dispose()
+}
+
 /** Representation of a [AttributedString] that can be displayed in a [DrawContext]. */
 @OptIn(ExperimentalForeignApi::class)
 class TextLayout(
