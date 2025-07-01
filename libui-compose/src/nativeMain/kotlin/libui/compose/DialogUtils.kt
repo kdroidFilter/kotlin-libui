@@ -95,7 +95,6 @@ fun msgBoxError(text: String, details: String = "") {
 /**
  * A composable function that provides a file dialog with a button and a text field.
  *
- * @param label The label for the form item.
  * @param buttonText The text to display on the button.
  * @param enabled Whether the components are enabled.
  * @param visible Whether the components are visible.
@@ -103,41 +102,37 @@ fun msgBoxError(text: String, details: String = "") {
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 fun FileDialogField(
-    label: String = "File",
     buttonText: String = "Open File",
     enabled: Boolean = true,
     visible: Boolean = true
 ) {
     val text = remember { mutableStateOf("") }
 
-    FormItem(label = label) {
-        HBox {
-            Button(
-                text = buttonText,
-                onClick = { 
-                    val result = openFileDialog()
-                    if (result != null) {
-                        text.value = result
-                    }
-                },
-                enabled = enabled,
-                visible = visible
-            )
+    HBox {
+        Button(
+            text = buttonText,
+            onClick = { 
+                val result = openFileDialog()
+                if (result != null) {
+                    text.value = result
+                }
+            },
+            enabled = enabled,
+            visible = visible
+        )
 
-            TextField(
-                text = text,
-                readOnly = true,
-                enabled = enabled,
-                visible = visible
-            )
-        }
+        TextField(
+            text = text,
+            readOnly = true,
+            enabled = enabled,
+            visible = visible
+        )
     }
 }
 
 /**
  * A composable function that provides a folder dialog with a button and a text field.
  *
- * @param label The label for the form item.
  * @param buttonText The text to display on the button.
  * @param enabled Whether the components are enabled.
  * @param visible Whether the components are visible.
@@ -145,41 +140,37 @@ fun FileDialogField(
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 fun FolderDialogField(
-    label: String = "Folder",
     buttonText: String = "Open Folder",
     enabled: Boolean = true,
     visible: Boolean = true
 ) {
     val text = remember { mutableStateOf("") }
 
-    FormItem(label = label) {
-        HBox {
-            Button(
-                text = buttonText,
-                onClick = { 
-                    val result = openFolderDialog()
-                    if (result != null) {
-                        text.value = result
-                    }
-                },
-                enabled = enabled,
-                visible = visible
-            )
+    HBox {
+        Button(
+            text = buttonText,
+            onClick = { 
+                val result = openFolderDialog()
+                if (result != null) {
+                    text.value = result
+                }
+            },
+            enabled = enabled,
+            visible = visible
+        )
 
-            TextField(
-                text = text,
-                readOnly = true,
-                enabled = enabled,
-                visible = visible
-            )
-        }
+        TextField(
+            text = text,
+            readOnly = true,
+            enabled = enabled,
+            visible = visible
+        )
     }
 }
 
 /**
  * A composable function that provides a save file dialog with a button and a text field.
  *
- * @param label The label for the form item.
  * @param buttonText The text to display on the button.
  * @param enabled Whether the components are enabled.
  * @param visible Whether the components are visible.
@@ -187,34 +178,31 @@ fun FolderDialogField(
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 fun SaveFileDialogField(
-    label: String = "Save File",
     buttonText: String = "Save File",
     enabled: Boolean = true,
     visible: Boolean = true
 ) {
     val text = remember { mutableStateOf("") }
 
-    FormItem(label = label) {
-        HBox {
-            Button(
-                text = buttonText,
-                onClick = { 
-                    val result = saveFileDialog()
-                    if (result != null) {
-                        text.value = result
-                    }
-                },
-                enabled = enabled,
-                visible = visible
-            )
+    HBox {
+        Button(
+            text = buttonText,
+            onClick = { 
+                val result = saveFileDialog()
+                if (result != null) {
+                    text.value = result
+                }
+            },
+            enabled = enabled,
+            visible = visible
+        )
 
-            TextField(
-                text = text,
-                readOnly = true,
-                enabled = enabled,
-                visible = visible
-            )
-        }
+        TextField(
+            text = text,
+            readOnly = true,
+            enabled = enabled,
+            visible = visible
+        )
     }
 }
 

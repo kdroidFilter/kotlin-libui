@@ -147,26 +147,20 @@ fun main() = runLibUI {
                         }
                     }
 
-                    // Separator
-                    HorizontalSeparator()
-
                     // Right column - File dialogs and message boxes
                     BoxItem(stretchy = true) {
                         VBox {
                             // File dialogs
-                            Form {
+                            VBox {
                                 FileDialogField(
-                                    label = "Open File",
                                     buttonText = "Open File"
                                 )
 
                                 FolderDialogField(
-                                    label = "Open Folder",
                                     buttonText = "Open Folder"
                                 )
 
                                 SaveFileDialogField(
-                                    label = "Save File",
                                     buttonText = "Save File"
                                 )
                             }
