@@ -28,6 +28,7 @@ include(":libui-compose")
 include(":samples-compose:hello")
 include(":samples-compose:form")
 include(":samples-compose:controlgallery")
+include(":samples-compose:datetime")
 
 include(":samples:controlgallery")
 include(":samples:datetime")
