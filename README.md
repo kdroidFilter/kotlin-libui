@@ -1,177 +1,31 @@
-kotlin-libui
-============
+# Kotlin LibUI
 
-[Kotlin/Native](https://github.com/JetBrains/kotlin-native) bindings to the
-[libui](https://github.com/andlabs/libui.git) C library.
+[![Kotlin](https://img.shields.io/badge/kotlin-2.2.0-blue.svg)](https://kotlinlang.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![Build Status](https://travis-ci.org/msink/kotlin-libui.svg?branch=master)](https://travis-ci.org/msink/kotlin-libui)
-[![Build status](https://ci.appveyor.com/api/projects/status/github/msink/kotlin-libui?svg=true)](https://ci.appveyor.com/project/msink/kotlin-libui)
+A fork of [kotlin-libui](https://github.com/msink/kotlin-libui) updated to Kotlin 2.2.0, providing [Kotlin/Native](https://github.com/JetBrains/kotlin-native) bindings to the [libui](https://github.com/andlabs/libui.git) C library.
 
-libui is a C lightweight multi-platform UI library using native widgets on Linux (Gtk3), macOS, and Windows.
-Using this bindings you can develop cross-platform but native-looking GUI programs, written in Kotlin,
-and compiled to small native executable file.
+## Overview
 
-## Using
+LibUI is a lightweight multi-platform UI library that uses native widgets on Linux (Gtk3), macOS, and Windows. With these Kotlin bindings, you can develop cross-platform, native-looking GUI applications written in Kotlin and compiled to small native executable files.
 
-To use this library in your project you can clone [Hello World](https://github.com/msink/hello-libui.git)
-application and use it as starting point.
+## Platform Compatibility
 
-## Building
+- **Windows**: Working properly
+- **Linux**: Working properly
+- **macOS**: Currently experiencing issues:
+  - Does not execute via Gradle
+  - Requires manual compilation of the executable before launching
+  - Window appears in the bottom-left corner of the screen
 
-Cross-platform build is automated using [Travis](https://travis-ci.org) for Linux and macOS targets, and
-[AppVeyor](https://ci.appveyor.com) for Windows targets. Just create release on GitHub, and executable files
-for all 3 major desktop platforms will be compiled and attached to release.
+## Features
 
-For local build use `./gradlew build` on Linux or macOS, or `gradlew build` on Windows.
-In this case only one - native for your platform - file will be built.
+### Traditional API
 
-The script below builds kotlin-libui then builds and runs the sample `hello-ktx`:
+The library provides a Kotlin DSL for building UIs in a concise and readable way:
 
-```
-#clone this project
-git clone https://github.com/msink/kotlin-libui.git
-
-#build libui.klib
-cd kotlin-libui/libui
-../gradlew build
-
-#build and run the hello-ktx sample
-cd ../samples/hello-ktx/
-../../gradlew run
-```
-
-You can use IntelliJ IDEA CE/UE or CLion EAP for code navigation and code completion, debugging works only in CLion.
-
-## Status
-
-**Warning:** currently it is just a prototype - works in most cases, but not protected from errors.
-And as both libui and Kotlin/Native are currently in alpha stage, anything can change.
-
-Well, I'm also not sure about DSL syntax - it works, and for now is good enough.
-Let's leave it as is for a while.
-
-If anyone have ideas - Issues and PullRequests are welcome.
-
-## Hello World
-
-Let's start from minimal sample application - single button and single scrollable text area.
-
-<details>
- <summary>Screenshots:</summary>
-
-![Windows](samples/hello/hello-windows.png)
-
-![Unix](samples/hello/hello-linux.png)
-
-![macOS](samples/hello/hello-osx.png)
-</details><br/>
-
-<details>
- <summary>C implementation:</summary>
-    
-``` c
-#include "ui.h"
-
-static int onClosing(uiWindow *window, void *data)
-{
-    uiQuit();
-    return 1;
-}
-
-static void saySomething(uiButton *button, void *data)
-{
-    uiMultilineEntryAppend(uiMultilineEntry(data),
-        "Hello, World!  Ciao, mondo!\n"
-        "Привет, мир!  你好，世界！\n\n");
-}
-
-int main(void)
-{
-    uiInitOptions options;
-    uiWindow *window;
-    uiBox *box;
-    uiButton *button;
-    uiMultilineEntry *scroll;
-
-    memset(&options, 0, sizeof(options));
-    if (uiInit(&options) != NULL)
-        abort();
-
-    window = uiNewWindow("Hello", 320, 240, 0);
-    uiWindowSetMargined(window, 1);
-
-    box = uiNewVerticalBox();
-    uiBoxSetPadded(box, 1);
-    uiWindowSetChild(window, uiControl(box));
-
-    scroll = uiNewMultilineEntry();
-    uiMultilineEntrySetReadOnly(scroll, 1);
-
-    button = uiNewButton("libui говорит: click me!");
-    uiButtonOnClicked(button, saySomething, scroll);
-    uiBoxAppend(box, uiControl(button), 0);
-
-    uiBoxAppend(box, uiControl(scroll), 1);
-
-    uiWindowOnClosing(window, onClosing, NULL);
-    uiControlShow(uiControl(window));
-    uiMain();
-    return 0;
-}
-```
-</details><br/>
-
-<details>
- <summary>Direct translation to Kotlin:</summary>
-    
-``` kt
-import kotlinx.cinterop.*
-import libui.*
-
-fun main(args: Array<String>) = memScoped {
-    val options = alloc<uiInitOptions>()
-    val error = uiInit(options.ptr)
-    if (error != null) throw Error("Error: '${error.toKString()}'")
-
-    val window = uiNewWindow("Hello", 320, 240, 0)
-    uiWindowSetMargined(window, 1)
-
-    val box = uiNewVerticalBox()
-    uiBoxSetPadded(box, 1)
-    uiWindowSetChild(window, box?.reinterpret())
-
-    val scroll = uiNewMultilineEntry()
-    uiMultilineEntrySetReadOnly(scroll, 1)
-    val button = uiNewButton("libui говорит: click me!")
-    fun saySomething(button: CPointer<uiButton>?, data: COpaquePointer?) {
-        uiMultilineEntryAppend(data?.reinterpret(),
-            "Hello, World!  Ciao, mondo!\n" +
-            "Привет, мир!  你好，世界！\n\n")
-    }
-    uiButtonOnClicked(button, staticCFunction(::saySomething), scroll)
-    uiBoxAppend(box, button?.reinterpret(), 0)
-    uiBoxAppend(box, scroll?.reinterpret(), 1)
-
-    fun onClosing(window: CPointer<uiWindow>?, data: COpaquePointer?): Int {
-        uiQuit()
-        return 1
-    }
-    uiWindowOnClosing(window, staticCFunction(::onClosing), null)
-    uiControlShow(window?.reinterpret())
-    uiMain()
-    uiUninit()
-}
-```
-</details><br/>
-
-While this works, it's far from idiomatic Kotlin.
-
-OK, let's wrap all that noisy function calls, with final goal to get something similar to [TornadoFX](https://github.com/edvin/tornadofx):
-
-``` kt
-import libui.*
-
-fun main(args: Array<String>) = appWindow(
+```kotlin
+fun main() = appWindow(
     title = "Hello",
     width = 320,
     height = 240
@@ -179,13 +33,9 @@ fun main(args: Array<String>) = appWindow(
     vbox {
         lateinit var scroll: TextArea
 
-        button("libui говорит: click me!") {
+        button("Click me!") {
             action {
-                scroll.append("""
-                    |Hello, World!  Ciao, mondo!
-                    |Привет, мир!  你好，世界！
-                    |
-                    |""".trimMargin())
+                scroll.append("Hello, World!\n")
             }
         }
         scroll = textarea {
@@ -196,30 +46,113 @@ fun main(args: Array<String>) = appWindow(
 }
 ```
 
-## More samples
+### Experimental Compose Implementation
 
-- [simple form](samples/form)
-- [controls gallery](samples/controlgallery)
-- [histogram](samples/histogram)
-- [drawtext](samples/drawtext)
-- [datetime](samples/datetime)
-- [timer](samples/timer)
-- [logo](samples/logo)
-- [table](samples/table)
+This fork aims to provide a Compose UI implementation for LibUI, although this remains a very challenging task. The current Compose implementation is **extremely experimental** and should be considered only as a technical proof of concept:
+
+```kotlin
+fun main() = runLibUI {
+    val state = remember { WindowState(SizeInt(640, 480)) }
+
+    Window(
+        onCloseRequest = { uiQuit() },
+        state = state,
+        title = "LibUI Compose Example"
+    ) {
+        VBox {
+            val text = remember { mutableStateOf("") }
+
+            Button(
+                text = "Click Me",
+                onClick = { text.value += "Hello, Compose UI!\n" }
+            )
+
+            MultilineEntry(
+                text = text,
+                readOnly = true
+            )
+        }
+    }
+}
+```
+
+## Getting Started
+
+### Installation
+
+To use this library in your project, clone this repository:
+
+```bash
+git clone https://github.com/yourusername/kotlin-libui.git
+```
+
+### Building
+
+For local builds:
+
+```bash
+# On Linux/macOS
+./gradlew build
+
+# On Windows
+gradlew build
+```
+
+To build and run a sample:
+
+```bash
+# Build the library
+cd kotlin-libui/libui
+../gradlew build
+
+# Run a sample
+cd ../samples/hello-ktx/
+../../gradlew run
+```
+
+### macOS Special Instructions
+
+On macOS, due to current issues:
+
+1. Compile the executable manually
+2. Launch the executable directly (not through Gradle)
+3. Note that the window will appear in the bottom-left corner of the screen
+
+## Samples
+
+- [Hello World](samples/hello-ktx)
+- [Form](samples/form)
+- [Controls Gallery](samples/controlgallery)
+- [Histogram](samples/histogram)
+- [Draw Text](samples/drawtext)
+- [Date & Time](samples/datetime)
+- [Timer](samples/timer)
+- [Logo](samples/logo)
+- [Table](samples/table)
 
 ## Documentation
 
-See [autogenerated documentation](docs/index.md), samples and comments in source code.
+- [API Documentation](docs/index.md)
+- [Compose UI Documentation](libui-compose/README.md)
 
-### Lifecycle management
+## Lifecycle Management
 
-Kotlin memory management differs from native C model, so all libui objects are wrapped in Kotlin objects
-inherited from [Disposable](docs/libui.ktx/-disposable/index.md), and direct using of libui functions is
-not recommended in most cases.
+Kotlin memory management differs from the native C model. All libui objects are wrapped in Kotlin objects inherited from [Disposable](docs/libui.ktx/-disposable/index.md), and direct use of libui functions is not recommended in most cases.
 
-Disposable objects must be disposed by calling [dispose](docs/libui.ktx/-disposable/dispose.md)() method,
-before program ends. Most objects are attached as a child to some other object, in this case parent is
-responsible to dispose all its children, recursively. As DSL builders automatically add created object to
-some container - in most cases you do not have to worry about lifecycle management. But if you want to do
-something not supported by DSL builders - you can create Disposable object directly, and in this case
-*you* are responsible to dispose or attach it at some point.
+Disposable objects must be disposed by calling the [dispose](docs/libui.ktx/-disposable/dispose.md)() method before the program ends. Most objects are attached as children to other objects, in which case the parent is responsible for disposing of all its children recursively.
+
+## Status
+
+This fork is under active development with a focus on:
+
+1. Maintaining compatibility with Kotlin 2.2.0
+2. Fixing platform-specific issues, especially on macOS
+3. Exploring the possibility of a Compose UI implementation, despite the significant challenges involved
+
+## Contributing
+
+Contributions are welcome! Feel free to submit issues and pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
