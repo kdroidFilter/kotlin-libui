@@ -1,6 +1,7 @@
 import libui.*
 import libui.ktx.*
 import libui.ktx.draw.*
+import kotlinx.cinterop.ExperimentalForeignApi
 
 // histogram margins
 const val xoffLeft = 20.0
@@ -19,6 +20,7 @@ fun graphHeight(clientHeight: Double): Double = clientHeight - yoffTop - yoffBot
 
 const val numPoints = 10
 
+@OptIn(ExperimentalForeignApi::class)
 fun main() = appWindow(
     title = "libui Histogram Example",
     width = 640,
@@ -64,6 +66,7 @@ fun main() = appWindow(
             val brush = brush()
 
             // make a stroke for both the axes and the histogram line
+            @OptIn(ExperimentalForeignApi::class)
             val stroke = stroke {
                 Cap = uiDrawLineCapFlat
                 Join = uiDrawLineJoinMiter
@@ -124,6 +127,7 @@ fun main() = appWindow(
                 }
             }
 
+            @OptIn(ExperimentalForeignApi::class)
             mouseEvent {
                 val graphWidth = graphWidth(it.AreaWidth)
                 val graphHeight = graphHeight(it.AreaHeight)

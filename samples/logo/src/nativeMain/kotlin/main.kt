@@ -2,7 +2,9 @@ import kotlin.math.PI
 import libui.*
 import libui.ktx.*
 import libui.ktx.draw.*
+import kotlinx.cinterop.ExperimentalForeignApi
 
+@OptIn(ExperimentalForeignApi::class)
 fun main() = appWindow(
     title = "Kotlin Logo (click to rotate)",
     width = 500,
@@ -16,6 +18,7 @@ fun main() = appWindow(
             val brush = brush()
             var angle = 0.0
 
+            @OptIn(ExperimentalForeignApi::class)
             mouseEvent {
                 if (it.Down != 0) {
                     angle += PI / 2.0

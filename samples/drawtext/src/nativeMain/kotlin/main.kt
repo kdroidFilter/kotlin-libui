@@ -13,6 +13,7 @@ fun AttributedString.append(what: String, attr: Attribute, attr2: Attribute? = n
         setAttribute(attr2, start, end)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun DrawArea.makeAttributedString() = string(
     "Drawing strings with libui is done with the uiAttributedString and uiDrawTextLayout objects.\n" +
             "uiAttributedString lets you have a variety of attributes: "
@@ -21,19 +22,24 @@ fun DrawArea.makeAttributedString() = string(
     append(", ")
     append("font size", SizeAttribute(18.0))
     append(", ")
+    @OptIn(ExperimentalForeignApi::class)
     append("font weight", WeightAttribute(uiTextWeightBold))
     append(", ")
+    @OptIn(ExperimentalForeignApi::class)
     append("font italicness", ItalicAttribute(uiTextItalicItalic))
     append(", ")
+    @OptIn(ExperimentalForeignApi::class)
     append("font stretch", StretchAttribute(uiTextStretchCondensed))
     append(", ")
     append("text color", ColorAttribute(Color(r = 0.75, g = 0.25, b = 0.5, a = 0.75)))
     append(", ")
     append("text background color", BackgroundAttribute(Color(r = 0.5, g = 0.5, b = 0.25, a = 0.5)))
     append(", ")
+    @OptIn(ExperimentalForeignApi::class)
     append("underline style", UnderlineAttribute(uiUnderlineSingle))
     append(", ")
     append("and ")
+    @OptIn(ExperimentalForeignApi::class)
     append(
         "underline color",
         UnderlineAttribute(uiUnderlineDouble),
@@ -41,6 +47,7 @@ fun DrawArea.makeAttributedString() = string(
     )
     append(". ")
     append("Furthermore, there are attributes allowing for ")
+    @OptIn(ExperimentalForeignApi::class)
     append(
         "special underlines for indicating spelling errors",
         UnderlineAttribute(uiUnderlineSuggestion),
@@ -49,11 +56,13 @@ fun DrawArea.makeAttributedString() = string(
     append(" (and other types of errors) ")
     append("and control over OpenType features such as ligatures (for instance, ")
 
+    @OptIn(ExperimentalForeignApi::class)
     val otf = OpenTypeFeatures()
     otf.add("liga", 0u)
     append("afford", FeaturesAttribute(otf))
     append(" vs. ")
     otf.add("liga", 1u)
+    @OptIn(ExperimentalForeignApi::class)
     append("afford", FeaturesAttribute(otf))
     otf.dispose()
     append(").\n")
