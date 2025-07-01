@@ -14,7 +14,6 @@ subprojects {
     configure<KotlinMultiplatformExtension> {
         if (os.isWindows) {
             mingwX64("windows64")
-
         }
         if (os.isLinux) {
             linuxX64("linux")
@@ -26,14 +25,16 @@ subprojects {
         fun org.jetbrains.kotlin.gradle.plugin.mpp.Executable.windowsResources(rcFileName: String) {
             val taskName = linkTaskName.replaceFirst("link", "windres")
             val inFile = File(rcFileName)
-            val outFile = buildDir.resolve("processedResources/$taskName.res")
+            val outFile = layout.buildDirectory.file("processedResources/$taskName.res").get().asFile
 
-            val windresTask = tasks.create<Exec>(taskName) {
+            val windresTask = tasks.register<Exec>(taskName) {
                 val konanDataDir = System.getenv("KONAN_DATA_DIR") ?: "${System.getProperty("user.home")}/.konan"
-                val toolchainBinDir = when (target.konanTarget.architecture.bitness) {
-                    32 -> "$konanDataDir/dependencies/msys2-mingw-w64-i686-2/bin"
-                    64 -> "$konanDataDir/dependencies/msys2-mingw-w64-x86_64-2/bin"
-                    else -> error("Unsupported architecture")
+                val toolchainBinDir = when {
+                    target.konanTarget.architecture.name.equals("X86", ignoreCase = true) -> 
+                        "$konanDataDir/dependencies/msys2-mingw-w64-i686-2/bin"
+                    target.konanTarget.architecture.name.equals("X64", ignoreCase = true) -> 
+                        "$konanDataDir/dependencies/msys2-mingw-w64-x86_64-2/bin"
+                    else -> error("Architecture non prise en charge: ${target.konanTarget.architecture}")
                 }
 
                 inputs.file(inFile)
@@ -48,14 +49,34 @@ subprojects {
             linkerOpts(outFile.toString())
         }
 
-        targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-            sourceSets["${targetName}Main"].apply {
+        sourceSets {
+            val nativeMain by creating {
                 kotlin.srcDir("src/nativeMain/kotlin")
                 dependencies {
                     implementation(project(":libui"))
                 }
                 languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
             }
+
+            // Configurer les sourceSets spécifiques à chaque cible
+            if (os.isWindows || rootProject.hasProperty("publishMode")) {
+                val windows64Main by getting {
+                    dependsOn(nativeMain)
+                }
+            }
+            if (os.isLinux || rootProject.hasProperty("publishMode")) {
+                val linuxMain by getting {
+                    dependsOn(nativeMain)
+                }
+            }
+            if (os.isMacOsX || rootProject.hasProperty("publishMode")) {
+                val macosxMain by getting {
+                    dependsOn(nativeMain)
+                }
+            }
+        }
+
+        targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
             binaries {
                 executable(listOf(RELEASE, DEBUG)) {
                     if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW) {

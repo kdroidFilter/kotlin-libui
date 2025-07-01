@@ -45,7 +45,6 @@ kotlin {
 
     if (publishModeEnabled || os.isWindows) {
         mingwX64("windows64")
-
     }
     if (publishModeEnabled || os.isLinux) {
         linuxX64("linux")
@@ -54,36 +53,54 @@ kotlin {
         macosX64("macosx")
     }
 
-    val commonMain by sourceSets.getting
-    val nativeMain by sourceSets.creating {
-        dependsOn(commonMain)
-        sourceSets.all {
-            languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
-            languageSettings.optIn("kotlinx.cinterop.UnsafeNumber")
-            languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
+    // Configuration des sourceSets au niveau de l'extension
+    sourceSets {
+        val commonMain by getting
+        val nativeMain by creating {
+            dependsOn(commonMain)
         }
+
+        // Accéder aux sourceSets spécifiques une fois que les cibles sont configurées
+        this.names.forEach { name ->
+            if (name.endsWith("Main") && name != "commonMain" && name != "nativeMain") {
+                getByName(name).dependsOn(nativeMain)
+            }
+        }
+    }
+
+    // Configuration des options du compilateur au niveau de l'extension
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.contracts.ExperimentalContracts")
+        freeCompilerArgs.add("-opt-in=kotlinx.cinterop.UnsafeNumber")
+        freeCompilerArgs.add("-opt-in=kotlinx.cinterop.ExperimentalForeignApi")
     }
 
 
     targets.withType<KotlinNativeTarget> {
-        sourceSets["${targetName}Main"].apply {
-            dependsOn(nativeMain)
-        }
+        val konanName = konanTarget.name
         compilations["main"].apply {
+            val libDir = layout.buildDirectory.dir("libui/${konanName}")
+
             cinterops.create("libui") {
-                includeDirs("$buildDir/libui/${konanTarget.name}")
+                includeDirs(libDir)
                 defFile(project.file("src/nativeInterop/cinterop/libui.def"))
             }
-            compilerOptions.options.freeCompilerArgs.addAll(listOf(
-                "-include-binary", "$buildDir/libui/${konanTarget.name}/libui.a"
-            ))
+            compileTaskProvider.configure {
+                compilerOptions {
+                    freeCompilerArgs.addAll(listOf(
+                        "-include-binary", "${libDir.get().asFile.absolutePath}/libui.a"
+                    ))
+                }
+            }
         }
     }
 }
 
 tasks.withType<CInteropProcess> {
-    val archiveFile = File("$buildDir/libui/${konanTarget.name}",
-        "libui.${if (konanTarget.family == Family.MINGW) "zip" else "tgz"}")
+    val targetDir = layout.buildDirectory.dir("libui/${konanTarget.name}").get().asFile
+    val isMinGW = konanTarget.family == Family.MINGW
+    val archiveFile = File(targetDir,
+        "libui.${if (isMinGW) "zip" else "tgz"}")
 
     val downloadArchive = tasks.register<Download>(name.replaceFirst("cinterop", "download")) {
         val release = "${Libui.repo}/releases/download/${Libui.version}/libui-${Libui.version}"
@@ -103,7 +120,7 @@ tasks.withType<CInteropProcess> {
         } else {
             from(tarTree(resources.gzip(archiveFile)))
         }
-        into("$buildDir/libui/${konanTarget.name}")
+        into(targetDir)
         dependsOn(downloadArchive)
     }
 

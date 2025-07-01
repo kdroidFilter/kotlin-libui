@@ -2,8 +2,8 @@
 @file:Suppress("SpellCheckingInspection")
 
 kotlin {
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-        sourceSets["${targetName}Main"].apply {
+    sourceSets {
+        val nativeMain by getting {
             kotlin.srcDir("src/nativeMain/resources")
         }
     }

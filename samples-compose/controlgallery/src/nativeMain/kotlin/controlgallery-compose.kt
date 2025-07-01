@@ -1,7 +1,9 @@
 import androidx.compose.runtime.*
 import libui.compose.*
 import libui.uiQuit
+import kotlinx.cinterop.ExperimentalForeignApi
 
+@OptIn(ExperimentalForeignApi::class)
 fun main() = runLibUI {
     val state = remember { WindowState(SizeInt(640, 480)) }
 
