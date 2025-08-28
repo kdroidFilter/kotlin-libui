@@ -3,8 +3,12 @@
 
 kotlin {
     sourceSets {
-        val nativeMain by getting {
+        val linuxMain by getting {
+            // These are generated Kotlin files with image data, so they must be treated as Kotlin sources
             kotlin.srcDir("src/nativeMain/resources")
         }
+        // Optionnel: inclure aussi pour autres plateformes si nécessaires
+        // val windows64Main by getting { kotlin.srcDir("src/nativeMain/resources") }
+        // val macosxMain by getting { kotlin.srcDir("src/nativeMain/resources") }
     }
 }

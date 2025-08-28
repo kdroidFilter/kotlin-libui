@@ -56,14 +56,20 @@ kotlin {
     // Configuration des sourceSets au niveau de l'extension
     sourceSets {
         val commonMain by getting
-        val nativeMain by creating {
-            dependsOn(commonMain)
+        // Inclure directement les sources auparavant dans nativeMain dans les sourceSets spécifiques
+        if (publishModeEnabled || os.isWindows) {
+            val windows64Main by getting {
+                kotlin.srcDir("src/nativeMain/kotlin")
+            }
         }
-
-        // Accéder aux sourceSets spécifiques une fois que les cibles sont configurées
-        this.names.forEach { name ->
-            if (name.endsWith("Main") && name != "commonMain" && name != "nativeMain") {
-                getByName(name).dependsOn(nativeMain)
+        if (publishModeEnabled || os.isLinux) {
+            val linuxMain by getting {
+                kotlin.srcDir("src/nativeMain/kotlin")
+            }
+        }
+        if (publishModeEnabled || os.isMacOsX) {
+            val macosxMain by getting {
+                kotlin.srcDir("src/nativeMain/kotlin")
             }
         }
     }

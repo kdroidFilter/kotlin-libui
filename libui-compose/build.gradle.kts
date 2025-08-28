@@ -29,29 +29,29 @@ kotlin {
             }
         }
 
-        // Configurer le sourceSet nativeMain
-        val nativeMain by creating {
-            dependsOn(commonMain)
-            kotlin.srcDir("src/nativeMain/kotlin")
-            dependencies {
-                api(project(":libui"))
-            }
-        }
-
-        // Configurer les sourceSets spécifiques aux plateformes
+        // Inclure les sources précédemment dans nativeMain directement dans les sourceSets spécifiques
         if (os.isWindows || rootProject.hasProperty("publishMode")) {
             val windowsMain by getting {
-                dependsOn(nativeMain)
+                kotlin.srcDir("src/nativeMain/kotlin")
+                dependencies {
+                    api(project(":libui"))
+                }
             }
         }
         if (os.isLinux || rootProject.hasProperty("publishMode")) {
             val linuxMain by getting {
-                dependsOn(nativeMain)
+                kotlin.srcDir("src/nativeMain/kotlin")
+                dependencies {
+                    api(project(":libui"))
+                }
             }
         }
         if (os.isMacOsX || rootProject.hasProperty("publishMode")) {
             val macosxMain by getting {
-                dependsOn(nativeMain)
+                kotlin.srcDir("src/nativeMain/kotlin")
+                dependencies {
+                    api(project(":libui"))
+                }
             }
         }
     }

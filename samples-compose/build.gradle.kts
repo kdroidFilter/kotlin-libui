@@ -62,28 +62,32 @@ subprojects {
                     }
 
         sourceSets {
-            val nativeMain by creating {
-                kotlin.srcDir("src/nativeMain/kotlin")
-                dependencies {
-                    implementation(project(":libui-compose"))
-                }
-                languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
-            }
-
-            // Configurer les sourceSets spécifiques à chaque cible
+            // Inclure directement les sources auparavant dans nativeMain dans les sourceSets spécifiques
             if (os.isWindows || rootProject.hasProperty("publishMode")) {
                 val windows64Main by getting {
-                    dependsOn(nativeMain)
+                    kotlin.srcDir("src/nativeMain/kotlin")
+                    dependencies {
+                        implementation(project(":libui-compose"))
+                    }
+                    languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
                 }
             }
             if (os.isLinux || rootProject.hasProperty("publishMode")) {
                 val linuxMain by getting {
-                    dependsOn(nativeMain)
+                    kotlin.srcDir("src/nativeMain/kotlin")
+                    dependencies {
+                        implementation(project(":libui-compose"))
+                    }
+                    languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
                 }
             }
             if (os.isMacOsX || rootProject.hasProperty("publishMode")) {
                 val macosxMain by getting {
-                    dependsOn(nativeMain)
+                    kotlin.srcDir("src/nativeMain/kotlin")
+                    dependencies {
+                        implementation(project(":libui-compose"))
+                    }
+                    languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
                 }
             }
         }
